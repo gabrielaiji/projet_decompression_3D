@@ -11,6 +11,9 @@ class Model extends THREE.Mesh {
     }
 
     manageElement(element) {
+
+        let vertices = this.geometry.vertices;
+
         switch (element.type) {
             case Element.AddVertex:
                 this.geometry.vertices.push(element.value);
@@ -24,7 +27,6 @@ class Model extends THREE.Mesh {
 
             case Element.AddFace:
 
-                let vertices = this.geometry.vertices;
                 let f = element.value;
                 let normal =
                     vertices[f.b].clone().sub(vertices[f.a])
@@ -37,9 +39,27 @@ class Model extends THREE.Mesh {
                 this.geometry.elementsNeedUpdate = true;
                 break;
 
+            case Element.AddTriangleStrip:
+            case Element.AddTriangleFan:
+
+                for (let f of element.value) {
+                    let normal =
+                        vertices[f.b].clone().sub(vertices[f.a])
+                        .cross(vertices[f.c].clone().sub(vertices[f.a]));
+                    normal.normalize();
+
+                    f.normal = normal;
+                    f.materialIndex = 0;
+                    this.geometry.faces.push(f);
+
+                }
+
+                this.geometry.elementsNeedUpdate = true;
+
+                break;
+
             case Element.EditFace:
 
-                vertices = this.geometry.vertices;
                 f = element.value;
                 normal =
                     vertices[f.b].clone().sub(vertices[f.a])

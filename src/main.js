@@ -5,7 +5,9 @@ animate();
 
 function init() {
 
-    loader = new Loader('assets/bunny_remove.obj', 1024, 20);
+    let url = document.URL.split('?')[1] || "bunny_remove.obj";
+
+    loader = new Loader('assets/' + url, 1024, 20);
     loader.start(function(elements) {
         for (let element of elements) {
             if (element !== undefined) {
@@ -33,6 +35,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    window.addEventListener('resize', onWindowResize, false);
     controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 }
@@ -41,8 +44,15 @@ function animate() {
 
     requestAnimationFrame(animate);
     controls.update();
-    document.getElementById('progressbar').value = Math.floor(100 * loader.percentage());
+    document.getElementById('progressbar').value = Math.floor(100 * loader.percentage()) || 0;
     document.getElementById('percentage').innerHTML = Math.floor(100 * loader.percentage()) / 100 + "%";
     renderer.render(scene, camera);
 
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
 }

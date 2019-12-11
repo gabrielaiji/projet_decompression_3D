@@ -54,6 +54,30 @@ function parseLine(line) {
             );
             return element;
 
+        case "ts":
+            element.type = Element.AddTriangleStrip;
+            element.value = [];
+            for (let i = 1; i < split.length - 2; i++) {
+                element.value.push(new THREE.Face3(
+                    parseInt(split[i]  , 10) - 1,
+                    i % 2 === 1 ? parseInt(split[i+1], 10) - 1 : parseInt(split[i+2], 10) - 1,
+                    i % 2 === 1 ? parseInt(split[i+2], 10) - 1 : parseInt(split[i+1], 10) - 1,
+                ));
+            }
+            return element;
+
+        case "tf":
+            element.type = Element.AddTriangleFan;
+            element.value = [];
+            for (let i = 1; i < split.length - 2; i++) {
+                element.value.push(new THREE.Face3(
+                    parseInt(split[1]  , 10) - 1,
+                    parseInt(split[i+1], 10) - 1,
+                    parseInt(split[i+2], 10) - 1,
+                ));
+            }
+            return element;
+
         case "ev":
             element.type = Element.EditVertex;
             element.id = parseInt(split[1], 10) - 1;
@@ -72,6 +96,7 @@ function parseLine(line) {
                 parseInt(split[3], 10) - 1,
                 parseInt(split[4], 10) - 1,
             );
+            return element;
 
         case "df":
             element.type = Element.DeleteFace;
@@ -91,6 +116,8 @@ function parseLine(line) {
 const Element = {};
 Element.AddVertex = "AddVertex";
 Element.AddFace = "AddFace";
+Element.AddTriangleStrip = "AddTriangleStrip";
+Element.AddTriangleFan = "AddTriangleFan";
 Element.EditVertex = "EditVertex";
 Element.EditFace = "EditFace";
 Element.DeleteFace = "DeleteFace";
@@ -129,7 +156,6 @@ class Loader {
         let upperBound = Math.min(this.currentByte + this.chunkSize, this.dataLength);
 
         if (upperBound <= this.currentByte) {
-            console.log("Loading finished: " + this.currentByte + " / " + this.dataLength);
             return;
         }
 
