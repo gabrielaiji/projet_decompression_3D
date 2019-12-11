@@ -24,12 +24,30 @@ function parseLine(line) {
     switch (split[0]) {
         case "v":
             element.type = Element.AddVertex;
-            element.value = new THREE.Vector3(parseFloat(split[1]), parseFloat(split[2]), parseFloat(split[3]));
+            element.value = new THREE.Vector3(
+                parseFloat(split[1]),
+                parseFloat(split[2]),
+                parseFloat(split[3]),
+            );
             return element;
 
         case "f":
             element.type = Element.AddFace;
-            element.value = new THREE.Face3(parseInt(split[1], 10), parseInt(split[2], 10), parseInt(split[3], 10));
+            element.value = new THREE.Face3(
+                parseInt(split[1], 10) - 1,
+                parseInt(split[2], 10) - 1,
+                parseInt(split[3], 10) - 1,
+            );
+            return element;
+
+        case "ev":
+            element.type = Element.EditVertex;
+            element.id = parseInt(split[1], 10) - 1;
+            element.value = new THREE.Vector3(
+                parseFloat(split[2]),
+                parseFloat(split[3]),
+                parseFloat(split[4]),
+            );
             return element;
 
         case "":
@@ -45,6 +63,7 @@ function parseLine(line) {
 const Element = {};
 Element.AddVertex = "AddVertex";
 Element.AddFace = "AddFace";
+Element.EditVertex = "EditVertex";
 
 class Loader {
     constructor(path, chunkSize = 1024, timeout = 20) {

@@ -5,7 +5,7 @@ animate();
 
 function init() {
 
-    loader = new Loader('assets/bunny_low_res_scaled.obj');
+    loader = new Loader('assets/bunny_translate.obj');
     loader.start(function(elements) {
         for (let element of elements) {
             if (element !== undefined) {
