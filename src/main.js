@@ -5,7 +5,7 @@ animate();
 
 function init() {
 
-    let url = 'assets/' + document.URL.split('?')[1] || "bunny_remove.obj";
+    let url = 'assets/' + (document.URL.split('?')[1] || "bunny_remove.obj");
 
     loader = new Loader(url, 1024, 20);
     loader.start(function(elements) {
