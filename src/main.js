@@ -41,6 +41,8 @@ function animate() {
 
     requestAnimationFrame(animate);
     controls.update();
+    document.getElementById('progressbar').value = Math.floor(100 * loader.percentage());
+    document.getElementById('percentage').innerHTML = Math.floor(100 * loader.percentage()) / 100 + "%";
     renderer.render(scene, camera);
 
 }

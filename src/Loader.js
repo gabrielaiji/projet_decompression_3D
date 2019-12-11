@@ -1,3 +1,17 @@
+function fetchDataLength(path, callback) {
+    let xhr = new XMLHttpRequest();
+
+    xhr.open('HEAD', path, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                callback(xhr.getResponseHeader('Content-Length'));
+            }
+        }
+    };
+    xhr.send();
+}
+
 function fetchData(path, start, end, callback) {
     let xhr = new XMLHttpRequest();
 
@@ -91,23 +105,37 @@ class Loader {
     }
 
     start(callback) {
+        fetchDataLength(this.path, (length) => {
+            this.dataLength = length;
+            this.next(callback);
+        });
+    }
+
+    percentage() {
+        return 100 * this.currentByte / this.dataLength;
+    }
+
+    next(callback) {
         this.downloadAndParseNextChunk((data) => {
             callback(data);
             setTimeout(() => {
-                this.start(callback);
+                this.next(callback);
             }, this.timeout);
         });
     }
 
     downloadAndParseNextChunk(callback) {
-        fetchData(this.path, this.currentByte, this.currentByte + this.chunkSize, (data) => {
 
-            if (data.length === 0) {
-                console.log("Loading finished");
-                return;
-            }
+        let upperBound = Math.min(this.currentByte + this.chunkSize, this.dataLength);
 
-            this.currentByte += this.chunkSize;
+        if (upperBound <= this.currentByte) {
+            console.log("Loading finished: " + this.currentByte + " / " + this.dataLength);
+            return;
+        }
+
+        fetchData(this.path, this.currentByte, upperBound, (data) => {
+
+            this.currentByte = upperBound;
 
             let elements = [];
             let split = data.split('\n');
@@ -119,6 +147,7 @@ class Loader {
             }
 
             callback(elements);
+
         });
     }
 }
