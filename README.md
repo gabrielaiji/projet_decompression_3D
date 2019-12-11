@@ -123,5 +123,5 @@ visualisés en ajouter `?nom_du_modele.obj` à la fin de l'url. Par exemple,
 modèle `bunny.obj` du dossier `assets`. Ce modèle est un modèle d'exemple, il
 commence par encoder la version basse résolution du [Stanford
 bunny](https://graphics.stanford.edu/data/3Dscanrep/), translate tous ses
-sommets, les retranslate vers leurs positions d'origines puis supprime toutes
+sommets, les retranslate vers leurs positions d'origine puis supprime toutes
 les faces.
