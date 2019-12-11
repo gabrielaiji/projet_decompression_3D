@@ -88,6 +88,23 @@ function parseLine(line) {
             );
             return element;
 
+        case "tv":
+            element.type = Element.TranslateVertex;
+            element.id = parseInt(split[1], 10) - 1;
+            element.value = new THREE.Vector3(
+                parseFloat(split[2]),
+                parseFloat(split[3]),
+                parseFloat(split[4]),
+            );
+            return element;
+
+        case "efv":
+            element.type = Element.EditFaceVertex;
+            element.id = parseInt(split[1], 10) - 1;
+            element.oldIndex = parseInt(split[2], 10) - 1;
+            element.value = parseInt(split[3], 10) - 1;
+            return element;
+
         case "ef":
             element.type = Element.EditFace;
             element.id = parseInt(split[1], 10) - 1;
@@ -120,6 +137,8 @@ Element.AddTriangleStrip = "AddTriangleStrip";
 Element.AddTriangleFan = "AddTriangleFan";
 Element.EditVertex = "EditVertex";
 Element.EditFace = "EditFace";
+Element.EditFaceVertex = "EditFaceVertex";
+Element.TranslateVertex = "TranslateVertex";
 Element.DeleteFace = "DeleteFace";
 
 class Loader {

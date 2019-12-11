@@ -51,7 +51,8 @@ f 1 2 3
 
 **Attention :** en OBJ, les indices commencent à partir de 1
 
-**Attention :** dans notre logiciel, seules les faces triangulaires sont implémentées.
+**Attention :** dans notre logiciel, seules les faces triangulaires sont
+implémentées.
 
 ###### Edition d'un sommet
 
@@ -62,6 +63,16 @@ modifier puis de ses nouvelles coordonées. Par exemple :
 ```
 v 0.0 0.0 0.0
 ev 1 1.0 1.0 1.0
+```
+
+###### Translation d'un sommet
+
+De la même façon, un sommet peut être translaté grâce aux caractères `tv`. Par
+exemple :
+
+```
+v 1.0 2.0 3.0
+tv 1 1.0 1.0 1.0
 ```
 
 ###### Edition d'une face
@@ -77,6 +88,19 @@ v 1.0 1.0 0.0
 v 1.0 1.0 1.0
 f 1 2 3
 ef 1 1 2 4
+```
+
+On peut aussi changer un seul sommet d'une face grâce aux caractères `efv`,
+suivi de l'indice de la face à modifier, de l'indice du sommet à modifier (1, 2
+ou 3) et de la nouvelle valeur du sommet. Par exemple :
+
+```
+v 0.0 0.0 0.0
+v 1.0 0.0 0.0
+v 1.0 1.0 0.0
+v 1.0 1.0 1.0
+f 1 2 3
+efv 1 3 4
 ```
 
 ###### Suppression d'une face

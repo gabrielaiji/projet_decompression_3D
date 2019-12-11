@@ -64,6 +64,12 @@ class Model extends THREE.Mesh {
                 this.geometry.verticesNeedUpdate = true;
                 break;
 
+            case Element.TranslateVertex:
+                this.checkVertex(element.id);
+                this.geometry.vertices[element.id].add(element.value);
+                this.geometry.verticesNeedUpdate = true;
+                break;
+
             case Element.AddFace:
 
                 f = element.value;
@@ -114,6 +120,20 @@ class Model extends THREE.Mesh {
 
 
                 this.geometry.faces[element.id] = f;
+                this.geometry.elementsNeedUpdate = true;
+                break;
+
+            case Element.EditFaceVertex:
+
+                this.checkFaceId(element.id);
+
+                switch (element.oldIndex) {
+                    case 0: this.geometry.faces[element.id].a = element.value; break;
+                    case 1: this.geometry.faces[element.id].b = element.value; break;
+                    case 2: this.geometry.faces[element.id].c = element.value; break;
+                    default: this.throwError("Old vertex id in EditFaceVertex must be 1, 2 or 3, but was " + element.oldIndex + 1);
+                }
+
                 this.geometry.elementsNeedUpdate = true;
                 break;
 

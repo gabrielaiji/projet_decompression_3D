@@ -88,6 +88,23 @@ function parseLine(line) {
             );
             return element;
 
+        case "tv":
+            element.type = Element.TranslateVertex;
+            element.id = parseInt(split[1], 10) - 1;
+            element.value = new THREE.Vector3(
+                parseFloat(split[2]),
+                parseFloat(split[3]),
+                parseFloat(split[4]),
+            );
+            return element;
+
+        case "efv":
+            element.type = Element.EditFaceVertex;
+            element.id = parseInt(split[1], 10) - 1;
+            element.oldIndex = parseInt(split[2], 10) - 1;
+            element.value = parseInt(split[3], 10) - 1;
+            return element;
+
         case "ef":
             element.type = Element.EditFace;
             element.id = parseInt(split[1], 10) - 1;
@@ -120,6 +137,8 @@ Element.AddTriangleStrip = "AddTriangleStrip";
 Element.AddTriangleFan = "AddTriangleFan";
 Element.EditVertex = "EditVertex";
 Element.EditFace = "EditFace";
+Element.EditFaceVertex = "EditFaceVertex";
+Element.TranslateVertex = "TranslateVertex";
 Element.DeleteFace = "DeleteFace";
 
 class Loader {
@@ -244,6 +263,12 @@ class Model extends THREE.Mesh {
                 this.geometry.verticesNeedUpdate = true;
                 break;
 
+            case Element.TranslateVertex:
+                this.checkVertex(element.id);
+                this.geometry.vertices[element.id].add(element.value);
+                this.geometry.verticesNeedUpdate = true;
+                break;
+
             case Element.AddFace:
 
                 f = element.value;
@@ -294,6 +319,20 @@ class Model extends THREE.Mesh {
 
 
                 this.geometry.faces[element.id] = f;
+                this.geometry.elementsNeedUpdate = true;
+                break;
+
+            case Element.EditFaceVertex:
+
+                this.checkFaceId(element.id);
+
+                switch (element.oldIndex) {
+                    case 0: this.geometry.faces[element.id].a = element.value; break;
+                    case 1: this.geometry.faces[element.id].b = element.value; break;
+                    case 2: this.geometry.faces[element.id].c = element.value; break;
+                    default: this.throwError("Old vertex id in EditFaceVertex must be 1, 2 or 3, but was " + element.oldIndex + 1);
+                }
+
                 this.geometry.elementsNeedUpdate = true;
                 break;
 
