@@ -51,7 +51,7 @@ f 1 2 3
 
 **Attention :** en OBJ, les indices commencent à partir de 1
 
-**Attention :** dans notre logiciel, seules les faces triangulaires sont supportées.
+**Attention :** dans notre logiciel, seules les faces triangulaires sont implémentées.
 
 ###### Edition d'un sommet
 
@@ -93,11 +93,11 @@ f 1 2 3
 df 1
 ```
 
-**Attention :** les indices des faces ne sont pas changés après la suppression
-d'une ancienne face.
+**Attention :** les indices des faces suivantes ne sont pas changés après la
+suppression d'une ancienne face.
 
 ###### Triangle strips et triangle fans
-Pour la compression de contenu 3D, on utilise souvent des [Triangle
+Pour la compression de contenu 3D, on peut utiliser des [Triangle
 Strips](https://en.wikipedia.org/wiki/Triangle_strip) et des [Triangle
 Fans](https://en.wikipedia.org/wiki/Triangle_fan).
 
