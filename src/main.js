@@ -5,13 +5,21 @@ animate();
 
 function init() {
 
-    let url = document.URL.split('?')[1] || "bunny_remove.obj";
+    let url = 'assets/' + document.URL.split('?')[1] || "bunny_remove.obj";
 
-    loader = new Loader('assets/' + url, 1024, 20);
+    loader = new Loader(url, 1024, 20);
     loader.start(function(elements) {
         for (let element of elements) {
             if (element !== undefined) {
-                model.manageElement(element);
+                try {
+                    model.manageElement(element);
+                } catch(e) {
+                    if (e.type === "custom") {
+                        document.getElementById('errormessage').innerHTML = e;
+                    } else {
+                        throw e;
+                    }
+                }
             }
         }
     });
@@ -21,7 +29,7 @@ function init() {
 
     scene = new THREE.Scene();
 
-    model = new Model();
+    model = new Model(url);
     scene.add(model);
 
     light1 = new THREE.AmbientLight(0x999999);
