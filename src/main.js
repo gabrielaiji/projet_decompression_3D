@@ -5,7 +5,7 @@ animate();
 
 function init() {
 
-    loader = new Loader('assets/bunny_remove.obj');
+    loader = new Loader('assets/bunny_remove.obj', 1024, 20);
     loader.start(function(elements) {
         for (let element of elements) {
             if (element !== undefined) {
