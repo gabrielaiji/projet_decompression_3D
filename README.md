@@ -5,6 +5,28 @@ simple. Cependant, il n'est pas adapté aux représentations progressives. Pour
 cela, nous avons augmenté OBJ de nouvelles commandes qui permettent de modifier
 le contenu préalablement déclaré.
 
+## Utilisation
+
+Vous pouvez récupérer les sources de cette application en lançant la commande
+```
+git clone https://gitea.tforgione.fr/tforgione/obja
+```
+
+À la racine de ce projet, le script `server.py` vous permet de démarrer un
+server de streaming. Vous pouvez l'exécuter en lançant `./server.py`. Une fois
+cela fait, vous pouvez allez sur [localhost:8000](http://localhost:8000) pour
+lancer le streaming. Le navigateur télécharge progressivement les données et
+les affiche.
+
+Les modèles doivent être sauvegardés dans le dossiers `assets`, et peuvent être
+visualisés en ajouter `?nom_du_modele.obj` à la fin de l'url. Par exemple,
+[localhost:8000/?bunny.obj](http://localhost:8000/?bunny.obj) chargera le
+modèle `bunny.obj` du dossier `assets`. Ce modèle est un modèle d'exemple, il
+commence par encoder la version basse résolution du [Stanford
+bunny](https://graphics.stanford.edu/data/3Dscanrep/), translate tous ses
+sommets, les retranslate vers leurs positions d'origine puis supprime toutes
+les faces.
+
 ## Commandes
 ###### Ajout d'un sommet
 
@@ -104,24 +126,3 @@ v 1.0 0.0 0.0
 tf 1 2 3 4 5 6
 ```
 
-## Utilisation
-
-Vous pouvez récupérer les sources de cette application en lançant la commande
-```
-git clone https://gitea.tforgione.fr/tforgione/obja
-```
-
-À la racine de ce projet, le script `server.py` vous permet de démarrer un
-server de streaming. Vous pouvez l'exécuter en lançant `./server.py`. Une fois
-cela fait, vous pouvez allez sur [localhost:8000](http://localhost:8000) pour
-lancer le streaming. Le navigateur télécharge progressivement les données et
-les affiche.
-
-Les modèles doivent être sauvegardés dans le dossiers `assets`, et peuvent être
-visualisés en ajouter `?nom_du_modele.obj` à la fin de l'url. Par exemple,
-[localhost:8000/?bunny.obj](http://localhost:8000/?bunny.obj) chargera le
-modèle `bunny.obj` du dossier `assets`. Ce modèle est un modèle d'exemple, il
-commence par encoder la version basse résolution du [Stanford
-bunny](https://graphics.stanford.edu/data/3Dscanrep/), translate tous ses
-sommets, les retranslate vers leurs positions d'origine puis supprime toutes
-les faces.
