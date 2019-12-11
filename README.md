@@ -51,7 +51,7 @@ f 1 2 3
 
 **Attention :** en OBJ, les indices commencent à partir de 1
 
-**Attention :** dans notre logiciel, seule les faces triangulaires sont supportées.
+**Attention :** dans notre logiciel, seules les faces triangulaires sont supportées.
 
 ###### Edition d'un sommet
 
