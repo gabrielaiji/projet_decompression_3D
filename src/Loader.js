@@ -50,6 +50,20 @@ function parseLine(line) {
             );
             return element;
 
+        case "ef":
+            element.type = Element.EditFace;
+            element.id = parseInt(split[1], 10) - 1;
+            element.value = new THREE.Face3(
+                parseInt(split[2], 10) - 1,
+                parseInt(split[3], 10) - 1,
+                parseInt(split[4], 10) - 1,
+            );
+
+        case "df":
+            element.type = Element.DeleteFace;
+            element.id = parseInt(split[1], 10) - 1;
+            return element;
+
         case "":
         case "#":
             return;
@@ -64,6 +78,8 @@ const Element = {};
 Element.AddVertex = "AddVertex";
 Element.AddFace = "AddFace";
 Element.EditVertex = "EditVertex";
+Element.EditFace = "EditFace";
+Element.DeleteFace = "DeleteFace";
 
 class Loader {
     constructor(path, chunkSize = 1024, timeout = 20) {
