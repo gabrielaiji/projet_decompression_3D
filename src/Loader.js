@@ -98,6 +98,15 @@ function parseLine(line) {
             );
             return element;
 
+        case "pv":
+            element.type = Element.PredictVertex;
+            element.value = new THREE.Face3(
+                parseInt(split[2], 10) - 1,
+                parseInt(split[2], 10) - 1,
+                parseInt(split[2], 10) - 1,
+            );
+            return element;
+
         case "efv":
             element.type = Element.EditFaceVertex;
             element.id = parseInt(split[1], 10) - 1;
@@ -140,6 +149,7 @@ Element.EditFace = "EditFace";
 Element.EditFaceVertex = "EditFaceVertex";
 Element.TranslateVertex = "TranslateVertex";
 Element.DeleteFace = "DeleteFace";
+Element.PredictVertex = "PredictVertex";
 
 class Loader {
     constructor(path, chunkSize = 1024, timeout = 20) {

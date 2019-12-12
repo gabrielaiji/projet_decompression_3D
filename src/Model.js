@@ -47,6 +47,25 @@ class Model extends THREE.Mesh {
 
     }
 
+
+    checkVertexPrediction(f) {
+        let vertices = this.geometry.vertices;
+
+        if (vertices[f.a] === undefined) {
+            this.throwError("Vertex prediction requires vertex " + (f.a + 1) + " but there is no such vertex");
+        }
+
+        if (vertices[f.b] === undefined) {
+            this.throwError("Vertex prediction requires vertex " + (f.b + 1) + " but there is no such vertex");
+        }
+
+        if (vertices[f.c] === undefined) {
+            this.throwError("Vertex prediction requires vertex " + (f.c + 1) + " but there is no such vertex");
+        }
+
+    }
+
+
     manageElement(element) {
 
         let vertices = this.geometry.vertices;
@@ -142,6 +161,13 @@ class Model extends THREE.Mesh {
                 this.geometry.elementsNeedUpdate = true;
                 break;
 
+            case Element.PredictVertex:
+                this.checkVertexPrediction(element.value);
+                vertices.push(vertices[element.value.a].clone()
+                    .add(vertices[element.value.c])
+                    .sub(vertices[element.value.b]));
+                this.geometry.verticesNeedUpdate = true;
+                break;
 
             default:
                 throw new Error("unknown element type: " + element.type);
