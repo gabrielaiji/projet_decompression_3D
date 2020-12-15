@@ -27,7 +27,7 @@ function fetchData(path, start, end, callback) {
     xhr.send();
 }
 
-function parseLine(line) {
+function parseLine(line, number) {
     let element = {};
     let split = line.split(/[ \t]+/);
 
@@ -125,7 +125,7 @@ function parseLine(line) {
             return;
 
         default:
-            throw new Error(split[0] + " is not a defined macro");
+            throw new Error(split[0] + " is not a defined macro in line " + number);
     }
 
 }
@@ -187,8 +187,8 @@ class Loader {
             split[0] = this.remainder + split[0];
             this.remainder = split.pop();
 
-            for (let line of split) {
-                elements.push(parseLine(line));
+            for (let i = 0; i < split.length; i++) {
+                elements.push(parseLine(split[i], i));
             }
 
             callback(elements);
