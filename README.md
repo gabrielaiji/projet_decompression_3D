@@ -168,7 +168,7 @@ v 0.0 1.0 0.0
 f 1 2 3
 s 43
 ef 1 2 2 3
-s 49
+s 48
 ```
 
 déclare un modèle de 43 octets défini par un triangle. Vous pouvez ensuite
