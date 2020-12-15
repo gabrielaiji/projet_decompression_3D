@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2
 
 # Shamefully copied from this gist :
 # https://gist.github.com/pankajp/280596a5dabaeeceaaaa/
