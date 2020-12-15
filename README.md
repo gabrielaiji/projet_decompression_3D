@@ -150,3 +150,27 @@ v 1.0 0.0 0.0
 tf 1 2 3 4 5 6
 ```
 
+###### Déclaration de la taille en octets
+
+À tout moment, dans votre fichier, vous pouvez utiliser l'instruction
+
+```
+s 35223
+```
+
+qui déclare la taille actuelle du modèle (cumulée, en octets). Cette instruction permettra
+plus tard d'évaluer le débit distortion au cours du temps de chargement. Par exemple
+
+```
+v 0.0 0.0 0.0
+v 1.0 0.0 0.0
+v 0.0 1.0 0.0
+f 1 2 3
+s 43
+ef 1 2 2 3
+s 49
+```
+
+déclare un modèle de 43 octets défini par un triangle. Vous pouvez ensuite
+rajouter d'autres instructions pour modifier le modèle puis remettre une
+instruction `s` pour spécifier la nouvelle taille.
