@@ -120,6 +120,23 @@ df 1
 **Attention :** les indices des faces suivantes ne sont pas changés après la
 suppression d'une ancienne face.
 
+##### Changer la couleur d'une face
+
+Notre format OBJ permet de changer la couleur d'une face. Pour changer la
+couleur d'une face, il suffit de d'utiliser les caractères `fc` suivis de
+l'indice de la face dont vous souhaitez changer la couleur, puis des
+composantes rouges, vertes et bleues, entre 0 et 1.
+
+
+```
+v 0.0 0.0 0.0
+v 1.0 0.0 0.0
+v 1.0 1.0 0.0
+v 1.0 1.0 1.0
+f 1 2 3
+fc 1 1.0 0.0 0.0
+```
+
 ###### Triangle strips et triangle fans
 Pour la compression de contenu 3D, on peut utiliser des [Triangle
 Strips](https://en.wikipedia.org/wiki/Triangle_strip) et des [Triangle

@@ -27,7 +27,7 @@ function fetchData(path, start, end, callback) {
     xhr.send();
 }
 
-function parseLine(line) {
+function parseLine(line, number) {
     let element = {};
     let split = line.split(/[ \t]+/);
 
@@ -51,6 +51,16 @@ function parseLine(line) {
                 parseInt(split[1], 10) - 1,
                 parseInt(split[2], 10) - 1,
                 parseInt(split[3], 10) - 1,
+            );
+            return element;
+
+        case "fc":
+            element.type = Element.SetFaceColor;
+            element.id = parseInt(split[1], 10) - 1;
+            element.value = new THREE.Color(
+                parseFloat(split[2]),
+                parseFloat(split[3]),
+                parseFloat(split[4]),
             );
             return element;
 
@@ -134,7 +144,8 @@ function parseLine(line) {
             return;
 
         default:
-            throw new Error(split[0] + " is not a defined macro");
+            return;
+            // throw new Error(split[0] + " is not a defined macro in line " + number);
     }
 
 }
@@ -149,6 +160,7 @@ Element.EditFace = "EditFace";
 Element.EditFaceVertex = "EditFaceVertex";
 Element.TranslateVertex = "TranslateVertex";
 Element.DeleteFace = "DeleteFace";
+Element.SetFaceColor = "SetFaceColor";
 Element.PredictVertex = "PredictVertex";
 
 class Loader {
@@ -197,8 +209,8 @@ class Loader {
             split[0] = this.remainder + split[0];
             this.remainder = split.pop();
 
-            for (let line of split) {
-                elements.push(parseLine(line));
+            for (let i = 0; i < split.length; i++) {
+                elements.push(parseLine(split[i], i));
             }
 
             callback(elements);

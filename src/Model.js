@@ -5,6 +5,7 @@ class Model extends THREE.Mesh {
             new THREE.MeshLambertMaterial( { color: 0xffffff, side: THREE.DoubleSide } ),
             new THREE.MeshBasicMaterial( { transparent: true, opacity: 0 } )
         ];
+        materials[0].vertexColors = true;
         super(geometry, materials);
         this.frustumCulled = false;
         this.path = path;
@@ -159,6 +160,13 @@ class Model extends THREE.Mesh {
             case Element.DeleteFace:
                 this.geometry.faces[element.id].materialIndex = 1;
                 this.geometry.elementsNeedUpdate = true;
+                break;
+
+            case Element.SetFaceColor:
+                this.geometry.faces[element.id].color.r = element.value.r;
+                this.geometry.faces[element.id].color.g = element.value.g;
+                this.geometry.faces[element.id].color.b = element.value.b;
+                this.geometry.colorsNeedUpdate = true;
                 break;
 
             case Element.PredictVertex:

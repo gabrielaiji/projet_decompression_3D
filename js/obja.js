@@ -54,6 +54,16 @@ function parseLine(line, number) {
             );
             return element;
 
+        case "fc":
+            element.type = Element.SetFaceColor;
+            element.id = parseInt(split[1], 10) - 1;
+            element.value = new THREE.Color(
+                parseFloat(split[2]),
+                parseFloat(split[3]),
+                parseFloat(split[4]),
+            );
+            return element;
+
         case "ts":
             element.type = Element.AddTriangleStrip;
             element.value = [];
@@ -95,6 +105,15 @@ function parseLine(line, number) {
                 parseFloat(split[2]),
                 parseFloat(split[3]),
                 parseFloat(split[4]),
+            );
+            return element;
+
+        case "pv":
+            element.type = Element.PredictVertex;
+            element.value = new THREE.Face3(
+                parseInt(split[2], 10) - 1,
+                parseInt(split[2], 10) - 1,
+                parseInt(split[2], 10) - 1,
             );
             return element;
 
@@ -140,6 +159,8 @@ Element.EditFace = "EditFace";
 Element.EditFaceVertex = "EditFaceVertex";
 Element.TranslateVertex = "TranslateVertex";
 Element.DeleteFace = "DeleteFace";
+Element.SetFaceColor = "SetFaceColor";
+Element.PredictVertex = "PredictVertex";
 
 class Loader {
     constructor(path, chunkSize = 1024, timeout = 20) {
@@ -204,6 +225,7 @@ class Model extends THREE.Mesh {
             new THREE.MeshLambertMaterial( { color: 0xffffff, side: THREE.DoubleSide } ),
             new THREE.MeshBasicMaterial( { transparent: true, opacity: 0 } )
         ];
+        materials[0].vertexColors = true;
         super(geometry, materials);
         this.frustumCulled = false;
         this.path = path;
@@ -245,6 +267,25 @@ class Model extends THREE.Mesh {
         }
 
     }
+
+
+    checkVertexPrediction(f) {
+        let vertices = this.geometry.vertices;
+
+        if (vertices[f.a] === undefined) {
+            this.throwError("Vertex prediction requires vertex " + (f.a + 1) + " but there is no such vertex");
+        }
+
+        if (vertices[f.b] === undefined) {
+            this.throwError("Vertex prediction requires vertex " + (f.b + 1) + " but there is no such vertex");
+        }
+
+        if (vertices[f.c] === undefined) {
+            this.throwError("Vertex prediction requires vertex " + (f.c + 1) + " but there is no such vertex");
+        }
+
+    }
+
 
     manageElement(element) {
 
@@ -341,6 +382,20 @@ class Model extends THREE.Mesh {
                 this.geometry.elementsNeedUpdate = true;
                 break;
 
+            case Element.SetFaceColor:
+                this.geometry.faces[element.id].color.r = element.value.r;
+                this.geometry.faces[element.id].color.g = element.value.g;
+                this.geometry.faces[element.id].color.b = element.value.b;
+                this.geometry.colorsNeedUpdate = true;
+                break;
+
+            case Element.PredictVertex:
+                this.checkVertexPrediction(element.value);
+                vertices.push(vertices[element.value.a].clone()
+                    .add(vertices[element.value.c])
+                    .sub(vertices[element.value.b]));
+                this.geometry.verticesNeedUpdate = true;
+                break;
 
             default:
                 throw new Error("unknown element type: " + element.type);
