@@ -144,7 +144,8 @@ function parseLine(line, number) {
             return;
 
         default:
-            throw new Error(split[0] + " is not a defined macro in line " + number);
+            return;
+            // throw new Error(split[0] + " is not a defined macro in line " + number);
     }
 
 }
