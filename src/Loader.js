@@ -29,8 +29,7 @@ function fetchData(path, start, end, callback) {
 
 function parseLine(line, number) {
     let element = {};
-    let split = line.split(/[ \t]+/);
-
+    let split = line.split('#')[0].split(/[ \t]+/);
     if (split.length === 0) {
         return;
     }

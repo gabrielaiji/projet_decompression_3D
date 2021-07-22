@@ -5,7 +5,7 @@ animate();
 
 function init() {
 
-    let url = 'assets/' + (document.URL.split('?')[1] || "bunny.obj");
+    let url = (document.URL.split('?')[1] || "exemple/suzanne.obja");
 
     loader = new Loader(url, 1024, 20);
     loader.start(function(elements) {

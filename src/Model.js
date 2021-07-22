@@ -137,6 +137,7 @@ class Model extends THREE.Mesh {
                 normal.normalize();
 
                 f.normal = normal;
+                f.color = this.geometry.faces[element.id].color;
 
 
                 this.geometry.faces[element.id] = f;

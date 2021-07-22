@@ -12,6 +12,34 @@ Vous pouvez récupérer les sources de cette application en lançant la commande
 git clone https://gitea.tforgione.fr/tforgione/obja
 ```
 
+## Écriture d'un logiciel de compression progressive
+
+Le module `obja.py` permet de parser facilement des fichiers OBJ et de générer
+des fichiers au format OBJA.
+
+La classe `obja.Model` permet de facilement parser un fichier OBJ (grâce à la
+méthode `parse_file`. Elle contient les attributs suivants :
+
+  - `vertices` : une liste de `numpy.array` qui représente les sommets du
+    modèle (attention, les vecteurs sont en ligne)
+  - `faces` : une liste de `obja.Face`, qui contiennent eux-mêmes des attributs
+    `a`, `b` et `c` qui sont les indices des sommets dans l'attribut
+    `vertices` (les indices commencent à partir de 0).
+
+La classe `obja.Output` permet de générer facilement un modèle OBJA. Lors de la
+transformation d'un modèle pour l'adapter à un chargement progressif, le modèle
+doit être reconstruit et les indices des sommets et faces sont changés. La
+classe permet de travailler avec les indices du modèle d'origine, et donc de
+gérer automatiquement la transformation des indices de l'ancien modèle vers le
+nouveau modèle.
+
+Le fichier `decimate.py` contient un exemple basique de programme permettant la
+réécriture d'un fichier OBJ en OBJA de manière naïve. Il contient un programme
+principal qui transforme le fichier `exemple/suzanne.obj` en
+`exemple/suzanne.obja`, le rendant progressif.
+
+## Visualisation du streaming
+
 À la racine de ce projet, le script `server.py` vous permet de démarrer un
 server de streaming. Vous pouvez l'exécuter en lançant `./server.py`. Une fois
 cela fait, vous pouvez allez sur [localhost:8000](http://localhost:8000) pour
@@ -20,14 +48,15 @@ les affiche.
 
 Les modèles doivent être sauvegardés dans le dossiers `assets`, et peuvent être
 visualisés en ajouter `?nom_du_modele.obj` à la fin de l'url. Par exemple,
-[localhost:8000/?bunny.obj](http://localhost:8000/?bunny.obj) chargera le
-modèle `bunny.obj` du dossier `assets`. Ce modèle est un modèle d'exemple, il
-commence par encoder la version basse résolution du [Stanford
+[localhost:8000/?exemple/suzanne.obja](http://localhost:8000/?exemple/suzanne.obja)
+chargera le modèle `bunny.obj` du dossier `assets`. Ce modèle est un modèle
+d'exemple, il commence par encoder la version basse résolution du [Stanford
 bunny](https://graphics.stanford.edu/data/3Dscanrep/), translate tous ses
 sommets, les retranslate vers leurs positions d'origine puis supprime toutes
 les faces.
 
-## Commandes
+### Détails du format OBJA
+
 ###### Ajout d'un sommet
 
 Comme dans le OBJ standard, pour ajouter un sommet, il suffit d'utiliser le
