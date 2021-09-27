@@ -18,15 +18,21 @@ class Decimater(obja.Model):
         """
         operations = []
 
+        for (vertex_index, vertex) in enumerate(self.vertices):
+            operations.append(('ev', vertex_index, vertex + 0.25))
+
         # Iterate through the vertex
         for (vertex_index, vertex) in enumerate(self.vertices):
 
+            # Iterate through the faces
             for (face_index, face) in enumerate(self.faces):
 
-                # Delete any face that depends on this vertex
+                # Delete any face related to this vertex
                 if face_index not in self.deleted_faces:
-                    self.deleted_faces.add(face_index)
-                    operations.append(('face', face_index, face))
+                    if vertex_index in [face.a,face.b,face.c]:
+                        self.deleted_faces.add(face_index)
+                        # Add the instruction to operations stack
+                        operations.append(('face', face_index, face))
 
             # Delete the vertex
             operations.append(('vertex', vertex_index, vertex))
@@ -34,13 +40,16 @@ class Decimater(obja.Model):
         # To rebuild the model, run operations in reverse order
         operations.reverse()
 
-        output_model = obja.Output(output)
+        # Write the result in output file
+        output_model = obja.Output(output, random_color=True)
 
         for (ty, index, value) in operations:
             if ty == "vertex":
                 output_model.add_vertex(index, value)
+            elif ty == "face":
+                output_model.add_face(index, value)   
             else:
-                output_model.add_face(index, value)
+                output_model.edit_vertex(index, value)
 
 def main():
     """
