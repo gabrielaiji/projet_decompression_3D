@@ -57,9 +57,9 @@ def main():
     """
     np.seterr(invalid = 'raise')
     model = Decimater()
-    model.parse_file('exemple/suzanne.obj')
+    model.parse_file('example/suzanne.obj')
 
-    with open('exemple/suzanne.obja', 'w') as output:
+    with open('example/suzanne.obja', 'w') as output:
         model.contract(output)
 
 
