@@ -35,8 +35,8 @@ nouveau modèle.
 
 Le fichier `decimate.py` contient un exemple basique de programme permettant la
 réécriture d'un fichier OBJ en OBJA de manière naïve. Il contient un programme
-principal qui transforme le fichier `exemple/suzanne.obj` en
-`exemple/suzanne.obja`, le rendant progressif.
+principal qui transforme le fichier `example/suzanne.obj` en
+`example/suzanne.obja`, le rendant progressif.
 
 ## Visualisation du streaming
 
