@@ -196,6 +196,9 @@ class Loader {
         let upperBound = Math.min(this.currentByte + this.chunkSize, this.dataLength);
 
         if (upperBound <= this.currentByte) {
+            if (this.remainder !== "") {
+                callback([parseLine(this.remainder, 0)]);
+            }
             return;
         }
 
