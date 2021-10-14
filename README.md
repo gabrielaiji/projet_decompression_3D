@@ -48,7 +48,7 @@ les affiche.
 
 Les modèles doivent être sauvegardés dans le dossiers `assets`, et peuvent être
 visualisés en ajouter `?nom_du_modele.obj` à la fin de l'url. Par exemple,
-[localhost:8000/?exemple/suzanne.obja](http://localhost:8000/?exemple/suzanne.obja)
+[localhost:8000/?example/suzanne.obja](http://localhost:8000/?example/suzanne.obja)
 chargera le modèle `bunny.obj` du dossier `assets`. Ce modèle est un modèle
 d'exemple, il commence par encoder la version basse résolution du [Stanford
 bunny](https://graphics.stanford.edu/data/3Dscanrep/), translate tous ses
