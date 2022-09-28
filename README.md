@@ -46,10 +46,10 @@ cela fait, vous pouvez allez sur [localhost:8000](http://localhost:8000) pour
 lancer le streaming. Le navigateur télécharge progressivement les données et
 les affiche.
 
-Les modèles doivent être sauvegardés dans le dossiers `assets`, et peuvent être
-visualisés en ajouter `?nom_du_modele.obj` à la fin de l'url. Par exemple,
-[localhost:8000/?example/suzanne.obja](http://localhost:8000/?example/suzanne.obja)
-chargera le modèle `bunny.obj` du dossier `assets`. Ce modèle est un modèle
+Les modèles peuvent être
+visualisés en ajoutant `?chemin/nom_du_modele.obj` à la fin de l'url. Par exemple,
+[localhost:8000/?example/bunny.obja](http://localhost:8000/?example/bunny.obja)
+chargera le modèle `bunny.obja` du dossier `example`. Ce modèle est un modèle
 d'exemple, il commence par encoder la version basse résolution du [Stanford
 bunny](https://graphics.stanford.edu/data/3Dscanrep/), translate tous ses
 sommets, les retranslate vers leurs positions d'origine puis supprime toutes
