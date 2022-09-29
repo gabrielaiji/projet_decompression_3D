@@ -6,7 +6,6 @@
 # Standard library imports.
 import sys
 
-
 if sys.version_info[0] < 3:
     from SocketServer import ThreadingMixIn
     import BaseHTTPServer
@@ -17,7 +16,7 @@ else:
     import http.server as BaseHTTPServer
     from http.server import SimpleHTTPRequestHandler
     from socketserver import ThreadingMixIn
-    from urllib.parse import  quote, unquote
+    from urllib.parse import quote, unquote
     from io import BytesIO as cStringIO
 
 import os
@@ -34,6 +33,7 @@ import socket
 import errno
 
 DATA_DIR = getcwd()
+
 
 class ThreadingHTTPServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
     pass
@@ -61,7 +61,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
         in_file.seek(self.range_from)
         # Add 1 because the range is inclusive
         left_to_copy = 1 + self.range_to - self.range_from
-        buf_length = 64*1024
+        buf_length = 64 * 1024
         bytes_copied = 0
         while bytes_copied < left_to_copy:
             read_buf = in_file.read(min(buf_length, left_to_copy - bytes_copied))
@@ -125,7 +125,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
         file_size = fs.st_size
         if self.range_from is not None:
             if self.range_to is None or self.range_to >= file_size:
-                self.range_to = file_size-1
+                self.range_to = file_size - 1
             self.send_header("Content-Range",
                              "bytes %d-%d/%d" % (self.range_from,
                                                  self.range_to,
@@ -184,8 +184,8 @@ class RequestHandler(SimpleHTTPRequestHandler):
     def translate_path(self, path):
         """ Override to handle redirects.
         """
-        path = path.split('?',1)[0]
-        path = path.split('#',1)[0]
+        path = path.split('?', 1)[0]
+        path = path.split('#', 1)[0]
         path = normpath(unquote(path))
         words = path.split('/')
         words = filter(None, words)
@@ -240,12 +240,13 @@ def get_server(port=8000, next_attempts=0, serve_path=None):
             else:
                 raise
 
+
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
     PORT = 8000
-    if len(args)>0:
+    if len(args) > 0:
         PORT = int(args[-1])
     serve_path = DATA_DIR
     if len(args) > 1:
@@ -256,6 +257,6 @@ def main(args=None):
     print("serving at port " + str(PORT))
     httpd.serve_forever()
 
-if __name__ == "__main__" :
-    main()
 
+if __name__ == "__main__":
+    main()

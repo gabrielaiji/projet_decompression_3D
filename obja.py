@@ -8,11 +8,13 @@ import random
 obja model for python.
 """
 
+
 class Face:
     """
     The class that holds a, b, and c, the indices of the vertices of the face.
     """
-    def __init__(self, a, b, c, visible = True):
+
+    def __init__(self, a, b, c, visible=True):
         self.a = a
         self.b = b
         self.c = c
@@ -52,7 +54,7 @@ class Face:
         self.visible = other.visible
         return self
 
-    def test(self, vertices, line = "unknown"):
+    def test(self, vertices, line="unknown"):
         """
         Tests if a face references only vertices that exist when the face is declared.
         """
@@ -69,10 +71,12 @@ class Face:
     def __repr__(self):
         return str(self)
 
+
 class VertexError(Exception):
     """
     An operation references a vertex that does not exist.
     """
+
     def __init__(self, index, line):
         """
         Creates the error from index of the referenced vertex and the line where the error occured.
@@ -87,10 +91,12 @@ class VertexError(Exception):
         """
         return f'There is no vector {self.index} (line {self.line})'
 
+
 class FaceError(Exception):
     """
     An operation references a face that does not exist.
     """
+
     def __init__(self, index, line):
         """
         Creates the error from index of the referenced face and the line where the error occured.
@@ -105,10 +111,12 @@ class FaceError(Exception):
         """
         return f'There is no face {self.index} (line {self.line})'
 
+
 class FaceVertexError(Exception):
     """
     An operation references a face vector that does not exist.
     """
+
     def __init__(self, index, line):
         """
         Creates the error from index of the referenced face vector and the line where the error occured.
@@ -123,10 +131,12 @@ class FaceVertexError(Exception):
         """
         return f'Face has no vector {self.index} (line {self.line})'
 
+
 class UnknownInstruction(Exception):
     """
     An instruction is unknown.
     """
+
     def __init__(self, instruction, line):
         """
         Creates the error from instruction and the line where the error occured.
@@ -141,13 +151,15 @@ class UnknownInstruction(Exception):
         """
         return f'Instruction {self.instruction} unknown (line {self.line})'
 
+
 class Model:
     """
     The OBJA model.
     """
+
     def __init__(self):
         """
-        Intializes an empty model.
+        Initializes an empty model.
         """
         self.vertices = []
         self.faces = []
@@ -244,6 +256,7 @@ class Model:
             return
             # raise UnknownInstruction(split[0], self.line)
 
+
 def parse_file(path):
     """
     Parses a file and returns the model.
@@ -252,13 +265,15 @@ def parse_file(path):
     model.parse_file(path)
     return model
 
+
 class Output:
     """
     The type for a model that outputs as obja.
     """
-    def __init__(self, output, random_color = False):
+
+    def __init__(self, output, random_color=False):
         """
-        Initializes the index mapping dictionnaries.
+        Initializes the index mapping dictionaries.
         """
         self.vertex_mapping = dict()
         self.face_mapping = dict()
@@ -270,16 +285,17 @@ class Output:
         Adds a new vertex to the model with the specified index.
         """
         self.vertex_mapping[index] = len(self.vertex_mapping)
-        print('v {} {} {}'.format(vertex[0], vertex[1], vertex[2]), file = self.output)
+        print('v {} {} {}'.format(vertex[0], vertex[1], vertex[2]), file=self.output)
 
     def edit_vertex(self, index, vertex):
         """
         Changes the coordinates of a vertex.
         """
         if len(self.vertex_mapping) == 0:
-            print('ev {} {} {} {}'.format(index, vertex[0], vertex[1],vertex[2]), file = self.output)
+            print('ev {} {} {} {}'.format(index, vertex[0], vertex[1], vertex[2]), file=self.output)
         else:
-            print('ev {} {} {} {}'.format(self.vertex_mapping[index] + 1, vertex[0], vertex[1],vertex[2]), file = self.output)
+            print('ev {} {} {} {}'.format(self.vertex_mapping[index] + 1, vertex[0], vertex[1], vertex[2]),
+                  file=self.output)
 
     def add_face(self, index, face):
         """
@@ -287,11 +303,11 @@ class Output:
         """
         self.face_mapping[index] = len(self.face_mapping)
         print('f {} {} {}'.format(
-                self.vertex_mapping[face.a] + 1,
-                self.vertex_mapping[face.b] + 1,
-                self.vertex_mapping[face.c] + 1,
-            ),
-            file = self.output
+            self.vertex_mapping[face.a] + 1,
+            self.vertex_mapping[face.b] + 1,
+            self.vertex_mapping[face.c] + 1,
+        ),
+            file=self.output
         )
 
         if self.random_color:
@@ -300,7 +316,7 @@ class Output:
                 random.uniform(0, 1),
                 random.uniform(0, 1),
                 random.uniform(0, 1)),
-                file = self.output
+                file=self.output
             )
 
     def edit_face(self, index, face):
@@ -308,13 +324,14 @@ class Output:
         Changes the indices of the vertices of the specified face.
         """
         print('ef {} {} {} {}'.format(
-                self.face_mapping[index] + 1,
-                self.vertex_mapping[face.a] + 1,
-                self.vertex_mapping[face.b] + 1,
-                self.vertex_mapping[face.c] + 1
-            ),
-            file = self.output
+            self.face_mapping[index] + 1,
+            self.vertex_mapping[face.a] + 1,
+            self.vertex_mapping[face.b] + 1,
+            self.vertex_mapping[face.c] + 1
+        ),
+            file=self.output
         )
+
 
 def main():
     if len(sys.argv) == 1:
@@ -324,6 +341,7 @@ def main():
     model = parse_file(sys.argv[1])
     print(model.vertices)
     print(model.faces)
+
 
 if __name__ == "__main__":
     main()
