@@ -89,7 +89,7 @@ class VertexError(Exception):
         """
         Pretty prints the error.
         """
-        return f'There is no vertex {self.index} (line {self.line})'
+        return f"There is no vertex {self.index} (line {self.line})"
 
 
 class FaceError(Exception):
@@ -99,7 +99,7 @@ class FaceError(Exception):
 
     def __init__(self, index, line):
         """
-        Creates the error from index of the referenced face and the line where the error occured.
+        Creates the error from index of the referenced face and the line where the error occurred.
         """
         self.line = line
         self.index = index
@@ -217,7 +217,7 @@ class Model:
 
         elif split[0] == "f" or split[0] == "tf":
             for i in range(1, len(split) - 2):
-                face = Face.from_array(split[i:i+3])
+                face = Face.from_array(split[i:i + 3])
                 face.test(self.vertices, self.line)
                 self.faces.append(face)
 
