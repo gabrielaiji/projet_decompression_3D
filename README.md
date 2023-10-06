@@ -32,6 +32,8 @@ Fonction qui à partir de la liste des patchs et les sommets supprimés, renvoie
   Sortie: Liste des translations des sommets prédits
 
 
+--
+
 
 WaveFront OBJ est un format permettant d'encoder des modèles 3D de manière
 simple. Cependant, il n'est pas adapté aux représentations progressives. Pour
