@@ -1,5 +1,38 @@
 # OBJ augmenté
 
+Sujet choisi : Progressive Compression of Arbitrary Triangular Meshes
+
+## Premiere Etape : Compression
+
+### Repartition 
+
+#### Jean-Felix
+
+Fonction qui à partir d'une liste de face,  détermine les sommets à supprimer.
+Ces sommets doivent être indépendants (non liés)
+  Entrée: Liste de Faces (Une face = liste des 3 indices des sommets)
+  Sortie: Liste des indices des sommets à supprimer
+
+### Jonas
+
+Fonction qui à partir des sommets à supprimer, créé l'itération de compression suivante.
+  Entrée: Liste des indices des sommets à supprimer
+  Sortie: Nouveau maillage : liste de Faces ? (Faudrait enregistrer quelque part les couleurs, et les translations des points prédits)
+
+### Issam
+
+Fonction qui à partir de la liste des patchs, colore ces patchs.
+  Entrée: Liste des patchs (Un patch = liste des Faces)
+  Sortie: Liste de couples (indice face, couleur)
+
+### Gabriel
+
+Fonction qui à partir de la liste des patchs et les sommets supprimés, renvoie la liste des translations des points prédits.
+  Entrée: List des patchs + liste des indices des sommets supprimés
+  Sortie: Liste des translations des sommets prédits
+
+
+
 WaveFront OBJ est un format permettant d'encoder des modèles 3D de manière
 simple. Cependant, il n'est pas adapté aux représentations progressives. Pour
 cela, nous avons augmenté OBJ de nouvelles commandes qui permettent de modifier
