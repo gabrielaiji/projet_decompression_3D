@@ -19,16 +19,16 @@ class Vertice:
 	def getCoords(self) -> list[float]:
 		return [self._x, self._y, self._z]
 
-	def id() -> int:
+	def id(self) -> int:
 		return self._id
 
-	def x() -> float:
+	def x(self) -> float:
 		return self._x
 
-	def y() -> float:
+	def y(self) -> float:
 		return self._y
 
-	def z() -> float:
+	def z(self) -> float:
 		return self._z
 
 
@@ -39,22 +39,22 @@ class Face:
 		self._vertices = vertices
 		self._color = None
 
-	def getVertices() -> list[Vertice]:
+	def getVertices(self) -> list[Vertice]:
 		return self._vertices
 
-	def setColor(color: list[float]):
+	def setColor(self, color: list[float]):
 		self._color = color
 
-	def getColor() -> list[float]:
+	def getColor(self) -> list[float]:
 		return self._color
 
-	def getVerticesCoords() -> list[list[float]]:
+	def getVerticesCoords(self) -> list[list[float]]:
 		return list.map(lambda vertice : vertice.getCoords(), self._vertices)
 
-	def getVerticesIds() -> list[list[int]]:
+	def getVerticesIds(self) -> list[list[int]]:
 		return list.map(lambda vertice : vertice.id(), self._vertices)
 
-	def id() -> int:
+	def id(self) -> int:
 		return self._id
 
 
@@ -65,15 +65,15 @@ class Patch:
 		self._faces = faces
 		self._color = None
 
-	def setColor(color: list[float]):
+	def setColor(self, color: list[float]):
 		for face in self._faces:
 			face.setColor(color)
 		self._color = color
 
-	def getColor() -> list[float]:
+	def getColor(self) -> list[float]:
 		return self._color
 
-	def getVertices() -> list[Vertice]:
+	def getVertices(self) -> list[Vertice]:
 		vertices_dico = {}
 
 		for face in faces:
@@ -85,11 +85,11 @@ class Patch:
 
 		return vertices_dico.values()
 
-	def getVerticesCoords() -> list[list[float]]:
+	def getVerticesCoords(self) -> list[list[float]]:
 		return list.map(lambda vertice : vertice.getCoords(), self.getVertices())
 
-	def getVerticesIds() -> list[list[int]]:
+	def getVerticesIds(self) -> list[list[int]]:
 		return list.map(lambda vertice : vertice.id(), self.getVertices())
 
-	def id() -> int:
+	def id(self) -> int:
 		return self._id
