@@ -49,10 +49,10 @@ class Face:
 		return self._color
 
 	def getVerticesCoords(self) -> list[list[float]]:
-		return list.map(lambda vertice : vertice.getCoords(), self._vertices)
+		return list(map(lambda vertice : vertice.getCoords(), self._vertices))
 
 	def getVerticesIds(self) -> list[list[int]]:
-		return list.map(lambda vertice : vertice.id(), self._vertices)
+		return list(map(lambda vertice : vertice.id(), self._vertices))
 
 	def id(self) -> int:
 		return self._id
@@ -76,7 +76,7 @@ class Patch:
 	def getVertices(self) -> list[Vertice]:
 		vertices_dico = {}
 
-		for face in faces:
+		for face in self._faces:
 			local_vertices = face.getVertices()
 			for vertice in local_vertices:
 				v_id = vertice.id()
@@ -86,10 +86,10 @@ class Patch:
 		return vertices_dico.values()
 
 	def getVerticesCoords(self) -> list[list[float]]:
-		return list.map(lambda vertice : vertice.getCoords(), self.getVertices())
+		return list(map(lambda vertice : vertice.getCoords(), self.getVertices()))
 
 	def getVerticesIds(self) -> list[list[int]]:
-		return list.map(lambda vertice : vertice.id(), self.getVertices())
+		return list(map(lambda vertice : vertice.id(), self.getVertices()))
 
 	def id(self) -> int:
 		return self._id
