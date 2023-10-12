@@ -135,6 +135,21 @@ def distance_to_edge(vertex,boundaryedge,deldist=0.1):
     return distance < deldist
     
 
+def vertices_to_delete(faces):
+    """Return a list of vertices to delete from the model.
+    
+    Args:
+        faces (list): List of faces(List Face object).    
+    Returns:
+        list: List of vertices to delete from the model.
+    """
+
+    all_vertices = {vertex.id(): vertex.getCoords() for face in faces for vertex in face.getVertices()}
+    extracted_faces = [face.getVerticesIds() for face in faces]
+    vertices_list = [coords for _, coords in sorted(all_vertices.items())]
+
+    return vertices_to_delete(extracted_faces, vertices_list)
+
 def main():
     pass
 

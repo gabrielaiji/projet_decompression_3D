@@ -30,6 +30,7 @@ class Vertice:
 
 	def z(self) -> float:
 		return self._z
+	
 
 
 class Face:
