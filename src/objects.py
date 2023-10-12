@@ -72,6 +72,9 @@ class Patch:
 
 	def getColor(self) -> list[float]:
 		return self._color
+	
+	def getFaces(self) -> list[Face]:
+		return self._faces
 
 	def getVertices(self) -> list[Vertice]:
 		vertices_dico = {}
