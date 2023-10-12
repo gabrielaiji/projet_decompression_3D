@@ -145,10 +145,10 @@ def vertices_to_delete(faces):
     """
 
     all_vertices = {vertex.id(): vertex.getCoords() for face in faces for vertex in face.getVertices()}
-    extracted_faces = [face.getVerticesIds() for face in faces]
-    vertices_list = [coords for _, coords in sorted(all_vertices.items())]
+    faceslist = [face.getVerticesIds() for face in faces]
+    verticeslist = [coords for _, coords in sorted(all_vertices.items())]
 
-    return vertices_to_delete(extracted_faces, vertices_list)
+    return vertices_to_delete(faceslist, verticeslist)
 
 def main():
     pass
