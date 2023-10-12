@@ -21,7 +21,6 @@ def classify_vertex(vertex, triangles):
     
     edge_counts = {edge: flat_edges.count(edge) for edge in flat_edges}
     
-    # Check if vertex is complex
     for edge, count in edge_counts.items():
         if vertex in edge and (count < 1 or count > 2):
             return "complex",None
@@ -31,9 +30,6 @@ def classify_vertex(vertex, triangles):
         if vertex in edge and count == 1:
             boundary_edge = edge
             return "boundary",boundary_edge
-
-    
-
 
 def is_cycle(triangles):
     """Check if the triangles form a cycle around the vertex."""
@@ -62,12 +58,17 @@ def vertices_to_delete(faces,vertices):
     Returns:
         list: List of vertices to delete from the model.
     """
+
+    forbidden_vertices = set()
+
     triangles_per_vertex = [[] for i in range(len(vertices))]
     for face in faces:
         for vertex in face.vertices:
             triangles_per_vertex[vertex].append(face)
     vertices_to_delete = []
     for trianglelist,vertex in enumerate(triangles_per_vertex):
+        if vertex in forbidden_vertices:
+            continue
         if is_cycle(trianglelist):
             #simple
             toDelete = distance_to_plane(vertex,trianglelist,deldist=0.2)
@@ -80,6 +81,12 @@ def vertices_to_delete(faces,vertices):
                 toDelete = False
         if toDelete:
             vertices_to_delete.append(vertex)
+            forbidden_vertices.add(vertex)  # Add the current vertex to forbidden_vertices
+            # Add adjacent vertices of the deleted vertex to the forbidden set
+            for triangle in trianglelist:
+                for adj_vertex_index in triangle:
+                    forbidden_vertices.add(adj_vertex_index)
+
     
     return vertices_to_delete
 
