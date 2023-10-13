@@ -94,6 +94,9 @@ class Patch:
 	def getColor(self) -> list[float]:
 		return self._color
 	
+	def getDeletedVertexCoords(self) -> list[float]:
+		return self._deleted_vertex.getCoords()
+	
 	def getFaces(self) -> list[Face]:
 		return self._faces
 
@@ -115,10 +118,10 @@ class Patch:
 	def getVertexIds(self) -> list[list[int]]:
 		return list(map(lambda vertex : vertex.id(), self.getVertices()))
 	
-	def setDisplacementVector(self, vector: list[int]):
+	def setDisplacementVector(self, vector: list[float]):
 		self._displacement_vector = vector
 	
-	def getDisplacementVector(self) -> list[int]:
+	def getDisplacementVector(self) -> list[float]:
 		return self._displacement_vector
 
 	def id(self) -> int:
