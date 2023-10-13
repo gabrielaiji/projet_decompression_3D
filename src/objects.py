@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-class Vertice:
+class Vertex:
 
 	def __init__(self, v_id: int, x: float, y: float, z: float):
 		self._id = v_id
@@ -36,12 +36,12 @@ class Vertice:
 
 class Face:
 
-	def __init__(self, f_id: int, vertices: list[Vertice]):
+	def __init__(self, f_id: int, vertices: list[Vertex]):
 		self._id = f_id
 		self._vertices = vertices
 		self._color = None
 
-	def getVertices(self) -> list[Vertice]:
+	def getVertices(self) -> list[Vertex]:
 		return self._vertices
 
 	def setColor(self, color: list[float]):
@@ -50,11 +50,11 @@ class Face:
 	def getColor(self) -> list[float]:
 		return self._color
 
-	def getVerticesCoords(self) -> list[list[float]]:
-		return list(map(lambda vertice : vertice.getCoords(), self._vertices))
+	def getVertexCoords(self) -> list[list[float]]:
+		return list(map(lambda vertex : vertex.getCoords(), self._vertices))
 
-	def getVerticesIds(self) -> list[list[int]]:
-		return list(map(lambda vertice : vertice.id(), self._vertices))
+	def getVertexIds(self) -> list[list[int]]:
+		return list(map(lambda vertex : vertex.id(), self._vertices))
 
 	def id(self) -> int:
 		return self._id
@@ -78,7 +78,7 @@ class Patch:
 	def getFaces(self) -> list[Face]:
 		return self._faces
 
-	def getVertices(self) -> list[Vertice]:
+	def getVertices(self) -> list[Vertex]:
 		vertices_dico = {}
 
 		for face in self._faces:
@@ -90,11 +90,11 @@ class Patch:
 
 		return vertices_dico.values()
 
-	def getVerticesCoords(self) -> list[list[float]]:
-		return list(map(lambda vertice : vertice.getCoords(), self.getVertices()))
+	def getVertexCoords(self) -> list[list[float]]:
+		return list(map(lambda vertex : vertex.getCoords(), self.getVertices()))
 
-	def getVerticesIds(self) -> list[list[int]]:
-		return list(map(lambda vertice : vertice.id(), self.getVertices()))
+	def getVertexIds(self) -> list[list[int]]:
+		return list(map(lambda vertex : vertex.id(), self.getVertices()))
 
 	def id(self) -> int:
 		return self._id
