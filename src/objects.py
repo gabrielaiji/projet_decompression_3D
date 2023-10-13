@@ -19,6 +19,12 @@ class Vertex:
 
 	def getCoords(self) -> list[float]:
 		return [self._x, self._y, self._z]
+	
+	def toString(self):
+		return "Vertex : Id : {} ;  Coords : {} {} {}".format(self._id, self._x, self._y, self._z)
+	
+	def printToObja(self):
+		return "v {} {} {}".format(self._x, self._y, self._z)
 
 	def id(self) -> int:
 		return self._id
@@ -58,14 +64,27 @@ class Face:
 
 	def id(self) -> int:
 		return self._id
+	
+	def toString(self):
+		id1 = self._vertices[0].id()
+		id2 = self._vertices[1].id()
+		id3 = self._vertices[2].id()
+		return "Face : Id : {} ;  V_Ids : {} {} {}".format(self._id, id1, id2, id3)
+	
+	def printToObja(self):
+		id1 = self._vertices[0].id()
+		id2 = self._vertices[1].id()
+		id3 = self._vertices[2].id()
+		return "f {} {} {}".format(id1, id2, id3)
 
 
 class Patch:
 
-	def __init__(self, p_id: int, faces: list[Face]):
+	def __init__(self, p_id: int, faces: list[Face], deleted_Vertex: Vertex):
 		self._id = p_id
 		self._faces = faces
 		self._color = None
+		self._deleted_vertex = deleted_Vertex
 
 	def setColor(self, color: list[float]):
 		for face in self._faces:
@@ -95,6 +114,12 @@ class Patch:
 
 	def getVertexIds(self) -> list[list[int]]:
 		return list(map(lambda vertex : vertex.id(), self.getVertices()))
+	
+	def setDisplacementVector(self, vector: list[int]):
+		self._displacement_vector = vector
+	
+	def getDisplacementVector(self) -> list[int]:
+		return self._displacement_vector
 
 	def id(self) -> int:
 		return self._id
