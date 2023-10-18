@@ -1,16 +1,18 @@
 
-
+import obja
 import numpy as np
+
+from convert_obj_to_list_faces import convert_obj_to_list_faces
 
 
 def get_edges(face):
     """Return edges from a given face."""
     return [(face[0], face[1]), (face[1], face[2]), (face[0], face[2])]
 
-def compute_normal(triangle):
+def compute_normal(triangle,vertices):
     """Compute the normal of a triangle."""
-    v1 = np.array(triangle[1]) - np.array(triangle[0])
-    v2 = np.array(triangle[2]) - np.array(triangle[0])
+    v1 = np.array(vertices[triangle[1]-1]) - np.array(vertices[triangle[0]-1])
+    v2 = np.array(vertices[triangle[2]-1]) - np.array(vertices[triangle[0]-1])
     normal = np.cross(v1, v2)
     return normal / np.linalg.norm(normal)
 
@@ -38,12 +40,12 @@ def is_cycle(triangles):
     
     while queue:
         current_triangle = queue.pop()
-        if current_triangle in visited_triangles:
+        if tuple(current_triangle) in visited_triangles:
             continue
-        visited_triangles.add(current_triangle)
+        visited_triangles.add(tuple(current_triangle))
         
         for neighbor_triangle in triangles:
-            if neighbor_triangle not in visited_triangles and \
+            if tuple(neighbor_triangle) not in visited_triangles and \
                len(set(current_triangle).intersection(set(neighbor_triangle))) == 2:
                 queue.append(neighbor_triangle)
                 
@@ -63,15 +65,18 @@ def vertices_to_delete(faces,vertices):
 
     triangles_per_vertex = [[] for i in range(len(vertices))]
     for face in faces:
-        for vertex in face.vertices:
-            triangles_per_vertex[vertex].append(face)
+        for vertex in face:
+            #print("C'est l'indice du vertex : ", str(vertex)+ " or la liste est de taille : ", str(len(triangles_per_vertex)))
+            triangles_per_vertex[vertex - 1].append(face)
     vertices_to_delete = []
-    for trianglelist,vertex in enumerate(triangles_per_vertex):
+    for vertex,trianglelist in enumerate(triangles_per_vertex):
+        print("Trianglelist est : ", trianglelist)
+        print("Vertex est : ", vertex)
         if vertex in forbidden_vertices:
             continue
         if is_cycle(trianglelist):
             #simple
-            toDelete = distance_to_plane(vertex,trianglelist,deldist=0.2)
+            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.2)
         else:
             #boundary or complexe
             type,boundaryedge = classify_vertex(vertex, trianglelist)
@@ -90,7 +95,7 @@ def vertices_to_delete(faces,vertices):
     
     return vertices_to_delete
 
-def distance_to_plane(vertex,triangles,deldist=0.2):
+def distance_to_plane(vertex,triangles,vertices,deldist=0.2):
     """Return True if the vertex is close enough to the plane formed by the triangles.
     
     Args:
@@ -100,13 +105,20 @@ def distance_to_plane(vertex,triangles,deldist=0.2):
     Returns:
         bool: True if the vertex is close enough to the plane formed by the triangles.
     """
-    normals = np.array([compute_normal(triangle) for triangle in triangles])
+    normals = np.array([compute_normal(triangle,vertices) for triangle in triangles])
     
+    """print("Vertex:", vertices[vertex])
+
+    print("Computed normals[0]:", normals[0])"""
     average_normal = np.mean(normals, axis=0)
-    d = -np.dot(average_normal, vertex)
+    dot_product = np.dot(average_normal, vertices[vertex])
+    norm = np.linalg.norm(average_normal)
+    distance = abs(dot_product) / norm
+    """print("Dot product: ", dot_product)
+    print("Norm: ", norm)
+    print("Distance: ", distance)"""
     
-    distance = abs(np.dot(average_normal, vertex) + d) / np.linalg.norm(average_normal)
-    return distance < deldist
+    return (distance < deldist)
 
 def distance_to_edge(vertex,boundaryedge,deldist=0.1):
     """Return True if the vertex is close enough to the edge formed by the triangles.
@@ -132,10 +144,11 @@ def distance_to_edge(vertex,boundaryedge,deldist=0.1):
     else:
         distance = np.linalg.norm(AP - projection * (AB / magnitude_AB))
     
-    return distance < deldist
+    print("Distance to edge : ", distance)
+    return (distance < deldist)
     
 
-def vertices_to_delete(faces):
+def vertices_to_delete2(faces):
     """Return a list of vertices to delete from the model.
     
     Args:
@@ -145,13 +158,40 @@ def vertices_to_delete(faces):
     """
 
     all_vertices = {vertex.id(): vertex.getCoords() for face in faces for vertex in face.getVertices()}
-    faceslist = [face.getVerticesIds() for face in faces]
+    faceslist = [face.getVertexIds() for face in faces]
     verticeslist = [coords for _, coords in sorted(all_vertices.items())]
 
     return vertices_to_delete(faceslist, verticeslist)
 
 def main():
-    pass
+    faces = convert_obj_to_list_faces(obja.parse_file('example/bunny.obj'))
+    delverts = vertices_to_delete2(faces)
+    print("Nombre de sommets à supprimer : ", len(delverts))
+    with open('example/suzanne.obja', 'w') as output:
+        output_model = obja.Output(output, random_color=True)
+        editedfaces = []
+        deletedfaces = []
+        for face in faces:
+            if not any (vertex in delverts for vertex in face.getVertices()):
+                editedfaces.append(face)
+            else:
+                deletedfaces.append(face)
+        for face in editedfaces:
+            verts = face.getVertices()
+            output_model.add_vertex(verts[0].id(), verts[0].getCoords())
+            output_model.add_vertex(verts[1].id(), verts[1].getCoords())
+            output_model.add_vertex(verts[2].id(), verts[2].getCoords())
+            fvi = face.getVertexIds()
+            f = obja.Face(fvi[0],fvi[1],fvi[2])
+            output_model.add_face(face.id, f)
+        for face in deletedfaces:
+            verts = face.getVertices()
+            output_model.add_vertex(verts[0].id(), verts[0].getCoords())
+            output_model.add_vertex(verts[1].id(), verts[1].getCoords())
+            output_model.add_vertex(verts[2].id(), verts[2].getCoords())
+            fvi = face.getVertexIds()
+            f = obja.Face(fvi[0],fvi[1],fvi[2])
+            output_model.add_face(face.id,face.getVertexIds(), f)
 
 if __name__ == "__main__":
     main()
