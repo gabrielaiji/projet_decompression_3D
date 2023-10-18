@@ -163,35 +163,51 @@ def vertices_to_delete2(faces):
 
     return vertices_to_delete(faceslist, verticeslist)
 
-def main():
+def test():
     faces = convert_obj_to_list_faces(obja.parse_file('example/bunny.obj'))
-    delverts = vertices_to_delete2(faces)
+    all_vertices = {vertex.id(): vertex.getCoords() for face in faces for vertex in face.getVertices()}
+    faceslist = [face.getVertexIds() for face in faces]
+    verticeslist = [coords for _, coords in sorted(all_vertices.items())]
+    with open('example/suzanne.obja', 'w') as output:
+        output_model = obja.Output(output, random_color=True)
+        for face in faceslist:
+            verts = [verticeslist[face[0]-1],verticeslist[face[1]-1],verticeslist[face[2]-1]]
+            print("verts[0] : ", verts[0])
+            output_model.add_vertex(face[0], verts[0])
+            output_model.add_vertex(face[1], verts[1])
+            output_model.add_vertex(face[2], verts[2])
+            f = obja.Face(face[0],face[1],face[2])
+            output_model.add_face(0, f)
+    """delverts = vertices_to_delete2(faces)
     print("Nombre de sommets à supprimer : ", len(delverts))
     with open('example/suzanne.obja', 'w') as output:
         output_model = obja.Output(output, random_color=True)
         editedfaces = []
         deletedfaces = []
-        for face in faces:
-            if not any (vertex in delverts for vertex in face.getVertices()):
+        for face in faceslist:
+            if not any (vertex in delverts for vertex in face):
                 editedfaces.append(face)
             else:
                 deletedfaces.append(face)
         for face in editedfaces:
-            verts = face.getVertices()
-            output_model.add_vertex(verts[0].id(), verts[0].getCoords())
-            output_model.add_vertex(verts[1].id(), verts[1].getCoords())
-            output_model.add_vertex(verts[2].id(), verts[2].getCoords())
-            fvi = face.getVertexIds()
-            f = obja.Face(fvi[0],fvi[1],fvi[2])
-            output_model.add_face(face.id, f)
+            verts = [verticeslist[face[0]-1],verticeslist[face[1]-1],verticeslist[face[2]-1]]
+            print("verts[0] : ", verts[0])
+            output_model.add_vertex(face[0], verts[0])
+            output_model.add_vertex(face[1], verts[1])
+            output_model.add_vertex(face[2], verts[2])
+            f = obja.Face(face[0],face[1],face[2])
+            output_model.add_face(0, f)
         for face in deletedfaces:
-            verts = face.getVertices()
-            output_model.add_vertex(verts[0].id(), verts[0].getCoords())
-            output_model.add_vertex(verts[1].id(), verts[1].getCoords())
-            output_model.add_vertex(verts[2].id(), verts[2].getCoords())
-            fvi = face.getVertexIds()
-            f = obja.Face(fvi[0],fvi[1],fvi[2])
-            output_model.add_face(face.id,face.getVertexIds(), f)
+            verts = [verticeslist[face[0]-1],verticeslist[face[1]-1],verticeslist[face[2]-1]]
+            print("verts[0] : ", verts[0])
+            output_model.add_vertex(face[0], verts[0])
+            output_model.add_vertex(face[1], verts[1])
+            output_model.add_vertex(face[2], verts[2])
+            f = obja.Face(face[0],face[1],face[2])
+            output_model.add_face(0, f)"""
+
+def main():
+    test()
 
 if __name__ == "__main__":
     main()
