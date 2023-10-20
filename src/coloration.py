@@ -1,17 +1,19 @@
 from objects import Patch
 
+couleurs = [(1., 0., 0.), (0., 1., 0.), (1., 1., 0.)]
+
 # Ajouter une valeur dans un dictionnaire
 # IN : 
 # dict : Le dictionnaire en question
 # key : la clé en question
-# list_of_values : la liste des valeurs à attribuer au clé fourni
+# value_to_add : la valeur à attribuer au clé fourni
 # OUT : le dictionnaire avec la clé key ajoutée et les nouvelles valeurs
 # s'elle n'existait pas, et les nouvelles valeurs attribuées au clé s'elle
 # existait déjà
-def add_values_in_dict(dict, key, list_of_values):
+def add_values_in_dict(dict, key, value_to_add):
     if key not in dict:
         dict[key] = list()
-    dict[key].extend(list_of_values)
+    dict[key].append(value_to_add)
     return dict
 
 # Colorer les patch fourni en paramètres
@@ -31,12 +33,12 @@ def colorer(l_patch: list[Patch]):
             dico_patch_v = add_values_in_dict(dico_patch_v,patch.id(),v.id())
 
     # On colorie le premier patch
-    result[l_patch[0].id()] = (0.5,0.5,0.5)
+    result[l_patch[0].id()] = couleurs[1]
 
     # On parcours tous les patchs
     for patch in l_patch[1:]:
         #la liste des couleurs utilisées
-        colors = [(0.75,0.75,0.75),(0.5,0.5,0.5),(0.25,0.25,0.25)]
+        colors = couleurs.copy()
 
         # On prends les vertices associés à notre patch et on parcous les patchs associés à ces vertices
         id_vertices = dico_patch_v[patch.id()]
@@ -64,6 +66,6 @@ def colorer(l_patch: list[Patch]):
 
         # On attribue à notre patch une couleur possible
         patch.setColor(colors[0])
-        result[patch.id] = colors[0]
+        result[patch.id()] = colors[0]
 
     return result
