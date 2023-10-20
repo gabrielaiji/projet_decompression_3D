@@ -63,6 +63,7 @@ def colorer(l_patch: list[Patch]):
                             colors.remove(color)
 
         # On attribue à notre patch une couleur possible
+        patch.setColor(colors[0])
         result[patch.id] = colors[0]
 
     return result
