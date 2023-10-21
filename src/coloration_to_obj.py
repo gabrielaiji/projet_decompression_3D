@@ -17,8 +17,8 @@ def coloration_to_obj(list_vertices: list[Vertex], list_faces: list[Face]):
             f.write(f"v {vertex.x()} {vertex.y()} {vertex.z()}\n")
 
         for face in list_faces:
-            f.write(f"f {face.getVertices[0].id()} {face.getVertices[1].id()} {face.getVertices[2].id()}\n")
+            f.write(f"f {face.getVertices()[0].id()} {face.getVertices()[1].id()} {face.getVertices()[2].id()}\n")
 
             # Coloration
             if face.getColor() != None:
-                f.write(f"fc {face.id()} {face.getColor[0]} {face.getColor[1]} {face.getColor[2]}\n")
+                f.write(f"fc {face.id()} {face.getColor()[0]} {face.getColor()[1]} {face.getColor()[2]}\n")
