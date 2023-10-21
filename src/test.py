@@ -18,6 +18,8 @@ import obja
 from convert_obj_to_list_faces import convert_obj_to_list_faces
 from coloration import colorer
 from objects import Patch, Vertex
+from mat_adj import create_mat_adj
+from dsatur import dsatur
 
 model = obja.parse_file('../example/figure1_colore.obj')
 list_faces = convert_obj_to_list_faces(model)
@@ -38,3 +40,9 @@ couleurs = colorer(patches)
 for patch_id in couleurs:
     couleur = couleurs[patch_id]
     print("patch {} : {}".format(patch_id, couleur))
+
+mat_adj = create_mat_adj(patches)
+print(mat_adj)
+
+list_num_color = dsatur(mat_adj, 3)
+print(list_num_color)
