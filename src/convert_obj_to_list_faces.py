@@ -1,7 +1,7 @@
 import obja
 from objects import Vertex, Face
 
-def convert_obj_to_list_faces(obj:obja.Model):
+def read_obj(obj:obja.Model):
 
     list_vertices = []
     for (vertex_index, vertex) in enumerate(obj.vertices):
@@ -14,4 +14,4 @@ def convert_obj_to_list_faces(obj:obja.Model):
         my_face = Face(face_index + 1, list_3_vertices) # "+ 1" car les indices commencent à partir de 1
         list_faces.append(my_face)
 
-    return list_faces    
+    return list_faces, list_vertices 

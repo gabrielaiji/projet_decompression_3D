@@ -6,10 +6,10 @@ def coloration_to_obj(list_vertices: list[Vertex], list_faces: list[Face]):
 
     # On redéfinit les ids pour pas qu'il y ait de "trous"
     for (vertex_index, _) in enumerate(list_vertices):
-        list_vertices[vertex_index].setId(vertex_index)
+        list_vertices[vertex_index].setId(vertex_index+1)
 
     for (face_index, _) in enumerate(list_faces):
-        list_faces[face_index].setId(face_index)
+        list_faces[face_index].setId(face_index+1)
 
 
     with open(output_file, "w") as f:
@@ -19,6 +19,7 @@ def coloration_to_obj(list_vertices: list[Vertex], list_faces: list[Face]):
         for face in list_faces:
             f.write(f"f {face.getVertices()[0].id()} {face.getVertices()[1].id()} {face.getVertices()[2].id()}\n")
 
-            # Coloration
+        # Coloration
+        for face in list_faces:
             if face.getColor() != None:
                 f.write(f"fc {face.id()} {face.getColor()[0]} {face.getColor()[1]} {face.getColor()[2]}\n")

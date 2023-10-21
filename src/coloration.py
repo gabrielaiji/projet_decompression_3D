@@ -13,7 +13,7 @@ def color_with_dsatur(l_patch: list[Patch], nb_color):
     pacthes_colors = dsatur_modif(adjacency_mat, nb_color)
 
     for patch in l_patch:
-        patch.setColor(couleurs[pacthes_colors[patch.id()]])
+        patch.setColor(couleurs[pacthes_colors[patch.id()-1]])
 
 # Ajouter une valeur dans un dictionnaire
 # IN : 
