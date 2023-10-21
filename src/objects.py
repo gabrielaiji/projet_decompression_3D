@@ -8,6 +8,9 @@ class Vertex:
 		self._y = y
 		self._z = z
 
+	def setId(self, id: int):
+		self._id = id
+
 	def setX(self, x: float):
 		self._x = x
 
@@ -46,6 +49,9 @@ class Face:
 		self._id = f_id
 		self._vertices = vertices
 		self._color = None
+
+	def setId(self, id: int):
+		self._id = id
 
 	def getVertices(self) -> list[Vertex]:
 		return self._vertices
