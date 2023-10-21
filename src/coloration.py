@@ -53,7 +53,7 @@ def colorer(l_patch: list[Patch]):
                 intersection = ens1 & ens2
 
                 # S'ils ont 2 vertices en commun
-                if len(intersection)>2:
+                if len(intersection)==2:
                     # On voit est-ce qu'il y a une couleur déjà attribuée à ce patch
                     if id_patch in result:
                         color = result[id_patch]
@@ -65,6 +65,8 @@ def colorer(l_patch: list[Patch]):
                             colors.remove(color)
 
         # On attribue à notre patch une couleur possible
+        if colors == []:
+            colors = couleurs.copy()
         patch.setColor(colors[0])
         result[patch.id()] = colors[0]
 
