@@ -1,6 +1,19 @@
 from objects import Patch
+from mat_adj import create_mat_adj
+from dsatur import dsatur_modif
 
 couleurs = [(1., 0., 0.), (0., 1., 0.), (1., 1., 0.)]
+
+def color_with_dsatur(l_patch: list[Patch], nb_color):
+    """
+    Colors the patches, and the faces according to
+    the DSATUR (modified) algorithm.
+    """
+    adjacency_mat = create_mat_adj(l_patch)
+    pacthes_colors = dsatur_modif(adjacency_mat, nb_color)
+
+    for patch in l_patch:
+        patch.setColor(pacthes_colors[patch.id()])
 
 # Ajouter une valeur dans un dictionnaire
 # IN : 
