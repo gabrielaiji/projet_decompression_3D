@@ -24,17 +24,17 @@ from coloration_to_obj import coloration_to_obj
 
 model = obja.parse_file('../example/figure1_colore.obj')
 list_faces = convert_obj_to_list_faces(model)
-list_faces = [0] + list_faces
+list_faces = list_faces
 
-patches = [Patch(1, [list_faces[24], list_faces[25], list_faces[36]], Vertex(1, 0, 0, 0)),
-           Patch(2, [list_faces[26], list_faces[27], list_faces[3]], Vertex(1, 0, 0, 0)),
-           Patch(3, [list_faces[28], list_faces[5], list_faces[6], list_faces[7]], Vertex(1, 0, 0, 0)),
-           Patch(4, [list_faces[9], list_faces[10], list_faces[11]], Vertex(1, 0, 0, 0)),
-           Patch(5, [list_faces[12], list_faces[13], list_faces[14]], Vertex(1, 0, 0, 0)),
-           Patch(6, [list_faces[30], list_faces[31], list_faces[32]], Vertex(1, 0, 0, 0)),
-           Patch(7, [list_faces[34], list_faces[33], list_faces[19], list_faces[18]], Vertex(1, 0, 0, 0)),
-           Patch(8, [list_faces[21], list_faces[22], list_faces[35]], Vertex(1, 0, 0, 0)),
-           Patch(9, [list_faces[37], list_faces[38], list_faces[39], list_faces[29]], Vertex(1, 0, 0, 0))]
+patches = [Patch(1, [list_faces[23], list_faces[24], list_faces[35]], Vertex(1, 0, 0, 0)),
+           Patch(2, [list_faces[25], list_faces[26], list_faces[2]], Vertex(1, 0, 0, 0)),
+           Patch(3, [list_faces[27], list_faces[4], list_faces[5], list_faces[6]], Vertex(1, 0, 0, 0)),
+           Patch(4, [list_faces[8], list_faces[9], list_faces[10]], Vertex(1, 0, 0, 0)),
+           Patch(5, [list_faces[11], list_faces[12], list_faces[13]], Vertex(1, 0, 0, 0)),
+           Patch(6, [list_faces[29], list_faces[30], list_faces[31]], Vertex(1, 0, 0, 0)),
+           Patch(7, [list_faces[32], list_faces[32], list_faces[18], list_faces[17]], Vertex(1, 0, 0, 0)),
+           Patch(8, [list_faces[20], list_faces[21], list_faces[34]], Vertex(1, 0, 0, 0)),
+           Patch(9, [list_faces[36], list_faces[37], list_faces[38], list_faces[28]], Vertex(1, 0, 0, 0))]
 
 
 couleurs = colorer(patches)
