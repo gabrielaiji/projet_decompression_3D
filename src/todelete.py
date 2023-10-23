@@ -31,8 +31,18 @@ def classify_vertex(vertex, triangles):
     boundary_edge = []
     for edge, count in edge_counts.items():
         if vertex in edge and count == 1:
-            boundary_edge = edge
+            boundary_edge = edge #probleme ici, il faut bien définir le boundary edge
             return "boundary",boundary_edge
+        
+    #rajouter classification corner, qu'il ne faudra pas supprrimer
+    
+    #rajouter classification interior edge, qu'il faudra evaluer avec distance to edge 
+    """If the dihedral angle between two
+    adjacent triangles is greater than a specified feature angle,
+    then a feature edge exists"""
+    
+    #les deux sont des cas particulier de vertex simple (vertex qui vérifie iscycle)
+        
     return "unclassified", None
 
 def is_cycle(triangles):
@@ -86,14 +96,15 @@ def vertices_to_delete(faces,vertices):
         #print("Trianglelist est : ", trianglelist)
         #print("Vertex est : ", vertex)
         if is_cycle(trianglelist):
+            #print("cycle")
             #simple
             toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.01)
         else:
             #boundary or complexe
-            print("pas de cycle")
+            #print("pas de cycle")
             type,boundaryedge = classify_vertex(vertex, trianglelist)
             if type == "boundary":
-                toDelete = distance_to_edge(vertex,boundaryedge,deldist=0.6)
+                toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1)
             elif type == "complex" or "unclassified":
                 toDelete = False
         if toDelete and not (vertex in forbidden_vertices):
@@ -134,25 +145,30 @@ def distance_to_plane(vertex,triangles,vertices,deldist=0.2):
     print("Norm: ", norm)
     print("Distance: ", distance)"""
     
-    return (distance < deldist)
+    return (distance < deldist) #conditionner la distance par la moyenne des longueurs des edge du vertex, ça marchera mieux (pas besoin de changer de thershold pour chaque mesh)
 
-def distance_to_edge(vertex,boundaryedge,deldist=0.1):
+def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1):
     """Return True if the vertex is close enough to the edge formed by the triangles.
     
     Args:
+        vertices (list): List of 3-uplet containing the vertices coordinates.
         vertex (list): List of 3-uplet containing the vertex coordinates.
-        triangles (list): List of triangles(List of 3-uplet containing the vertices index in their list).
+        boundaryedge (list): List of 2-uplet containing the vertices index in their list.
         deldist (float): Distance that define the close enoughness.
     Returns:
         bool: True if the vertex is close enough to the edge formed by the triangles.
     """
-    A = boundaryedge[0]
-    B = boundaryedge[1]
-    AP = np.array(vertex) - A
+    A = vertices[boundaryedge[0]]
+    B = vertices[boundaryedge[1]]
+    #print("vertex : ", vertices[vertex])
+    AP = np.array(vertices[vertex]) - A
     AB = B - A
     magnitude_AB = np.linalg.norm(AB)
+    #print("Magnitude AB : ", magnitude_AB)
+    #print("Magnitude AP : ", np.linalg.norm(AP))
     projection = np.dot(AP, AB) / magnitude_AB
     
+    #print("Projection : ", projection)
     if projection < 0:
         distance = np.linalg.norm(AP)
     elif projection > 1:
