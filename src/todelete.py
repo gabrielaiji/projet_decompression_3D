@@ -38,20 +38,30 @@ def classify_vertex(vertex, triangles):
 def is_cycle(triangles):
     """Check if the triangles form a cycle around the vertex."""
     visited_triangles = set()
-    queue = [triangles[0]]
+    start_triangle = set(triangles[0])
+    current_triangle = start_triangle
     
-    while queue:
-        current_triangle = queue.pop()
-        if tuple(current_triangle) in visited_triangles:
-            continue
-        visited_triangles.add(tuple(current_triangle))
+    while True:
+        visited_triangles.add(tuple(sorted(list(current_triangle))))
         
-        for neighbor_triangle in triangles:
-            if tuple(neighbor_triangle) not in visited_triangles and \
-               len(set(current_triangle).intersection(set(neighbor_triangle))) == 2:
-                queue.append(neighbor_triangle)
-                
-    return len(visited_triangles) == len(triangles)
+        
+        next_triangle = None
+        for triangle in triangles:
+            if tuple(sorted(triangle)) in visited_triangles:
+                continue
+            if len(current_triangle.intersection(set(triangle))) == 2:
+                next_triangle = set(triangle)
+                break
+        
+        # If no neighboring triangle is found
+        if next_triangle is None:
+            break
+        
+        current_triangle = next_triangle
+
+    
+    return len(visited_triangles) == len(triangles) #Il faudrait refaire le parcour en partant d'un autre triangle de l'ensemble de triangle et vérifier que les taille sont égale
+
 
 def vertices_to_delete(faces,vertices):
     """Return a list of vertices to delete from the model.
@@ -77,9 +87,10 @@ def vertices_to_delete(faces,vertices):
         #print("Vertex est : ", vertex)
         if is_cycle(trianglelist):
             #simple
-            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.1)
+            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.01)
         else:
             #boundary or complexe
+            print("pas de cycle")
             type,boundaryedge = classify_vertex(vertex, trianglelist)
             if type == "boundary":
                 toDelete = distance_to_edge(vertex,boundaryedge,deldist=0.6)
@@ -89,8 +100,8 @@ def vertices_to_delete(faces,vertices):
             vertices_to_delete.append(vertex)
             forbidden_vertices.add(vertex)  # Add the current vertex to forbidden_vertices
             # Add adjacent vertices of the deleted vertex to the forbidden set
-            print("trianglelist : ", trianglelist)
-            print("vertex : ", vertex)
+            #print("trianglelist : ", trianglelist)
+            #print("vertex : ", vertex)
             for triangle in trianglelist:
                 for adj_vertex_index in triangle:
                     """print("triangle : ", triangle)

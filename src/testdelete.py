@@ -69,7 +69,7 @@ def test():
                 addedvert.append(face[2])
             f = obja.Face(face[0],face[1],face[2])
             output_model.add_face(i, f)"""
-    mesh = o3d.io.read_triangle_mesh('example/suzanne.obj')
+    mesh = o3d.io.read_triangle_mesh('example/bunny.obj')
     # Transformer le mesh en numpy arrays pour faciliter les manipulations
     vertices = np.asarray(mesh.vertices)
     triangles = np.asarray(mesh.triangles)
@@ -102,6 +102,8 @@ def test():
     # Définir la couleur des lignes (par exemple, bleu)
     line_colors = np.ones((len(lines), 3)) * [0, 0, 1]
     line_set.colors = o3d.utility.Vector3dVector(line_colors)
+
+    print("On a supprimé " + str(len(delverts)/len(np.asarray(mesh.vertices))*100) + "% des sommets du maillage")
 
     # Visualiser à la fois le maillage triangulaire et le wireframe
     o3d.visualization.draw_geometries([mesh, line_set])
