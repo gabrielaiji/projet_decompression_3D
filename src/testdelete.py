@@ -74,12 +74,12 @@ def test():
     vertices = np.asarray(mesh.vertices)
     triangles = np.asarray(mesh.triangles)
     delverts = vertices_to_delete(triangles,vertices)
-    print("delverts[0] : ", delverts[0])
+    """print("delverts[0] : ", delverts[0])
     print("delverts[1] : ", delverts[1])
     print("delverts[2] : ", delverts[2])
     print("vertice de delverts[0]  : ", vertices[delverts[0]])
     print("vertice de delverts[1]  : ", vertices[delverts[1]])
-    print("vertice de delverts[2]  : ", vertices[delverts[2]])
+    print("vertice de delverts[2]  : ", vertices[delverts[2]])"""
     vertex_colors = np.ones((len(np.asarray(mesh.vertices)), 3)) * [0, 1, 0]  # Vert par défaut
 
     # Changer la couleur des sommets qui doivent être supprimés en rouge
