@@ -1,7 +1,7 @@
 
 import obja
 import numpy as np
-import open3d as o3d
+# import open3d as o3d
 
 from io_obj.read_obj import read_obj,read_obj0
 
@@ -180,6 +180,15 @@ def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1):
     return (distance < deldist)
     
 
+
+def add_1_to_list_id_vertices(id_vertices):
+    for i in range(len(id_vertices)):
+        id_vertices[i] += 1
+    
+    return id_vertices
+
+
+
 def vertices_to_delete2(faces):
     """Return a list of vertices to delete from the model.
     
@@ -193,7 +202,8 @@ def vertices_to_delete2(faces):
     faceslist = [face.getVertexIds() for face in faces]
     verticeslist = [coords for _, coords in sorted(all_vertices.items())]
 
-    return vertices_to_delete(faceslist, verticeslist)
+    vertices_to_del = vertices_to_delete(faceslist, verticeslist)
+    return vertices_to_del
 
 
 
