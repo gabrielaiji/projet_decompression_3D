@@ -1,6 +1,6 @@
 from objects import Patch
-from mat_adj import create_mat_adj
-from dsatur import dsatur_modif
+from mat.mat_adj import create_mat_adj
+from .dsatur import dsatur_modif
 
 couleurs = [(1., 0., 0.), (0., 1., 0.), (1., 1., 0.)]
 

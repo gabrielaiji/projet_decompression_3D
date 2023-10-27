@@ -3,7 +3,7 @@ import obja
 import numpy as np
 import open3d as o3d
 
-from convert_obj_to_list_faces import read_obj,read_obj0
+from io_obj.read_obj import read_obj,read_obj0
 
 
 def get_edges(face):

@@ -15,12 +15,12 @@ faces = [(1, 2, 5),
 print(vertices_to_delete(faces, vertices))"""
 
 import obja
-from convert_obj_to_list_faces import read_obj
-from coloration import color_with_dsatur
+from io_obj.read_obj import read_obj
+from coloration.coloration import color_with_dsatur
 from objects import Patch, Vertex
-from mat_adj import create_mat_adj
-from dsatur import dsatur_modif
-from coloration_to_obj import coloration_to_obj
+from mat.mat_adj import create_mat_adj
+from coloration.dsatur import dsatur_modif
+from io_obj.write_obj import write_obj
 
 model = obja.parse_file('../example/figure1.obj')
 list_faces, list_vertices = read_obj(model)
@@ -37,4 +37,4 @@ patches = [Patch(1, [list_faces[23], list_faces[24], list_faces[35]], Vertex(1, 
 
 
 color_with_dsatur(patches, 3)
-coloration_to_obj(list_vertices, list_faces)
+write_obj(list_vertices, list_faces)

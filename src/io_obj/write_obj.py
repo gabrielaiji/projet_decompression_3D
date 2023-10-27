@@ -1,6 +1,6 @@
 from objects import Vertex, Face
 
-def coloration_to_obj(list_vertices: list[Vertex], list_faces: list[Face]):
+def write_obj(list_vertices: list[Vertex], list_faces: list[Face]):
 
     output_file = "../example/figure1_colore_exp.obj"
 
