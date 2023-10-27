@@ -10,7 +10,7 @@ def create_all_patches(list_vertices_to_delete: list[Vertex], id_f_start: int)\
     lst_patches = []
     for v_to_be_deleted in list_vertices_to_delete:
         old_faces = v_to_be_deleted.getFaces()
-        ordered_v = orderVertices(old_faces)
+        ordered_v = orderVertices(old_faces, v_to_be_deleted)
 
         new_faces_local, id_f_start = create_z_simple(ordered_v, id_f_start)
         patch_id = v_to_be_deleted.id()
