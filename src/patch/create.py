@@ -25,15 +25,15 @@ def create_all_patches(list_vertices_to_delete: list[Vertex], id_f_start: int)\
 
 def create_z_simple(liste_vertices: list[Vertex], id_f_start: int):
 
-    result = []
+    result: list[Face] = []
 
     n = len(liste_vertices)
 
     # Ajouter le face tout en haut
-    result.append(Face(id_f_start, liste_vertices[0],liste_vertices[1],liste_vertices[2]))
+    result.append(Face(id_f_start, [liste_vertices[0],liste_vertices[1],liste_vertices[2]]))
     id_f_start +=1
     # Ajouter le face tout en bas
-    result.append(Face(id_f_start,liste_vertices[n-1],liste_vertices[n-2],liste_vertices[n-3]))
+    result.append(Face(id_f_start,[liste_vertices[n-1],liste_vertices[n-2],liste_vertices[n-3]]))
     id_f_start +=1
 
     # le nombre des faces de chaque côté
@@ -44,7 +44,7 @@ def create_z_simple(liste_vertices: list[Vertex], id_f_start: int):
     j = 2
     compteur = 0
     while compteur<nb_f_cote:
-        result.append(Face(id_f_start, liste_vertices[i%n],liste_vertices[j],liste_vertices[(i-1)%n]))
+        result.append(Face(id_f_start, [liste_vertices[i%n],liste_vertices[j],liste_vertices[(i-1)%n]]))
         id_f_start +=1
         compteur += 1
         i -= 1
@@ -55,7 +55,7 @@ def create_z_simple(liste_vertices: list[Vertex], id_f_start: int):
     j = n-1
     compteur = 0
     while compteur<nb_f_cote:
-        result.append(Face(id_f_start, liste_vertices[i],liste_vertices[j],liste_vertices[i+1]))
+        result.append(Face(id_f_start, [liste_vertices[i],liste_vertices[j],liste_vertices[i+1]]))
         id_f_start +=1
         compteur += 1
         i += 1
