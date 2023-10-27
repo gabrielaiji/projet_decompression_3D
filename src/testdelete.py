@@ -1,6 +1,6 @@
 import open3d as o3d
 import numpy as np
-from todelete import vertices_to_delete,vertices_to_delete2
+from delete.todelete import vertices_to_delete,vertices_to_delete2
 
 def test():
     
