@@ -32,12 +32,17 @@ def create_z_simple(liste_vertices: list[Vertex], id_f_start: int):
     # Ajouter le face tout en haut
     result.append(Face(id_f_start, [liste_vertices[0],liste_vertices[1],liste_vertices[2]]))
     id_f_start +=1
-    # Ajouter le face tout en bas
-    result.append(Face(id_f_start,[liste_vertices[n-1],liste_vertices[n-2],liste_vertices[n-3]]))
-    id_f_start +=1
 
-    # le nombre des faces de chaque côté
-    nb_f_cote = (n-2-2)/2
+    if n%2 == 0:
+        # Ajouter le face tout en bas
+        result.append(Face(id_f_start,[liste_vertices[n//2],liste_vertices[1+n//2],liste_vertices[2+n//2]]))
+        id_f_start +=1
+
+        # le nombre des faces de chaque côté
+        nb_f_cote = (n-2-2)/2
+    else:
+        # le nombre des faces de chaque côté
+        nb_f_cote = (n-2-1)/2
 
     # On ajoute les faces dont 2 vertices sont à gauche
     i = 0
