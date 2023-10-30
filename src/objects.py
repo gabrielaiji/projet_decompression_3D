@@ -7,6 +7,7 @@ class Vertex:
 		self._x = x
 		self._y = y
 		self._z = z
+		self.faces = set()
 
 	def setId(self, id: int):
 		self._id = id
@@ -41,6 +42,16 @@ class Vertex:
 	def z(self) -> float:
 		return self._z
 	
+	def addFace(self, face: Face):
+		self.faces.add(face)
+	
+	def removeFace(self, face: Face):
+		if face in self.faces:
+			self.faces.remove(face)
+	
+	def getFaces(self) -> set[Face]:
+		return self.faces
+	
 
 
 class Face:
@@ -49,6 +60,9 @@ class Face:
 		self._id = f_id
 		self._vertices = vertices
 		self._color = None
+
+		for vertex in vertices:
+			vertex.addFace(self)
 
 	def setId(self, id: int):
 		self._id = id
@@ -82,6 +96,10 @@ class Face:
 		id2 = self._vertices[1].id()
 		id3 = self._vertices[2].id()
 		return "f {} {} {}".format(id1, id2, id3)
+	
+	def delete(self):
+		for vertex in self._vertices:
+			vertex.removeFace(self)
 
 
 class Patch:

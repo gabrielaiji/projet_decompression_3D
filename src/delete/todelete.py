@@ -1,9 +1,9 @@
 
 import obja
 import numpy as np
-import open3d as o3d
+# import open3d as o3d
 
-from convert_obj_to_list_faces import read_obj
+from io_obj.read_obj import read_obj,read_obj0
 
 
 def get_edges(face):
@@ -31,8 +31,18 @@ def classify_vertex(vertex, triangles):
     boundary_edge = []
     for edge, count in edge_counts.items():
         if vertex in edge and count == 1:
-            boundary_edge = edge
+            boundary_edge = edge #probleme ici, il faut bien définir le boundary edge
             return "boundary",boundary_edge
+        
+    #rajouter classification corner, qu'il ne faudra pas supprrimer
+    
+    #rajouter classification interior edge, qu'il faudra evaluer avec distance to edge 
+    """If the dihedral angle between two
+    adjacent triangles is greater than a specified feature angle,
+    then a feature edge exists"""
+    
+    #les deux sont des cas particulier de vertex simple (vertex qui vérifie iscycle)
+        
     return "unclassified", None
 
 def is_cycle(triangles):
@@ -44,7 +54,7 @@ def is_cycle(triangles):
     while True:
         visited_triangles.add(tuple(sorted(list(current_triangle))))
         
-        # Find a neighboring triangle
+        
         next_triangle = None
         for triangle in triangles:
             if tuple(sorted(triangle)) in visited_triangles:
@@ -59,9 +69,8 @@ def is_cycle(triangles):
         
         current_triangle = next_triangle
 
-    # Check if all triangles have been visited
-    return len(visited_triangles) == len(triangles)
-
+    
+    return len(visited_triangles) == len(triangles) #Il faudrait refaire le parcour en partant d'un autre triangle de l'ensemble de triangle et vérifier que les taille sont égale
 
 
 def vertices_to_delete(faces,vertices):
@@ -73,6 +82,7 @@ def vertices_to_delete(faces,vertices):
     Returns:
         list: List of vertices to delete from the model.
     """
+
 
     forbidden_vertices = set()
 
@@ -86,24 +96,23 @@ def vertices_to_delete(faces,vertices):
         #print("Trianglelist est : ", trianglelist)
         #print("Vertex est : ", vertex)
         if is_cycle(trianglelist):
+            #print("cycle")
             #simple
-            #print("On cycle")
-            toDelete = False#distance_to_plane(vertex,trianglelist,vertices,deldist=1)
+            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.01)
         else:
-            print("On cycle pas")
             #boundary or complexe
+            #print("pas de cycle")
             type,boundaryedge = classify_vertex(vertex, trianglelist)
             if type == "boundary":
-                print("On est sur un boundary")
-                toDelete = distance_to_edge(vertex,boundaryedge,deldist=10)
+                toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1)
             elif type == "complex" or "unclassified":
                 toDelete = False
         if toDelete and not (vertex in forbidden_vertices):
             vertices_to_delete.append(vertex)
             forbidden_vertices.add(vertex)  # Add the current vertex to forbidden_vertices
             # Add adjacent vertices of the deleted vertex to the forbidden set
-            """print("trianglelist : ", trianglelist)
-            print("vertex : ", vertex)"""
+            #print("trianglelist : ", trianglelist)
+            #print("vertex : ", vertex)
             for triangle in trianglelist:
                 for adj_vertex_index in triangle:
                     """print("triangle : ", triangle)
@@ -136,25 +145,30 @@ def distance_to_plane(vertex,triangles,vertices,deldist=0.2):
     print("Norm: ", norm)
     print("Distance: ", distance)"""
     
-    return (distance < deldist)
+    return (distance < deldist) #conditionner la distance par la moyenne des longueurs des edge du vertex, ça marchera mieux (pas besoin de changer de thershold pour chaque mesh)
 
-def distance_to_edge(vertex,boundaryedge,deldist=0.1):
+def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1):
     """Return True if the vertex is close enough to the edge formed by the triangles.
     
     Args:
+        vertices (list): List of 3-uplet containing the vertices coordinates.
         vertex (list): List of 3-uplet containing the vertex coordinates.
-        triangles (list): List of triangles(List of 3-uplet containing the vertices index in their list).
+        boundaryedge (list): List of 2-uplet containing the vertices index in their list.
         deldist (float): Distance that define the close enoughness.
     Returns:
         bool: True if the vertex is close enough to the edge formed by the triangles.
     """
-    A = boundaryedge[0]
-    B = boundaryedge[1]
-    AP = np.array(vertex) - A
+    A = vertices[boundaryedge[0]]
+    B = vertices[boundaryedge[1]]
+    #print("vertex : ", vertices[vertex])
+    AP = np.array(vertices[vertex]) - A
     AB = B - A
     magnitude_AB = np.linalg.norm(AB)
+    #print("Magnitude AB : ", magnitude_AB)
+    #print("Magnitude AP : ", np.linalg.norm(AP))
     projection = np.dot(AP, AB) / magnitude_AB
     
+    #print("Projection : ", projection)
     if projection < 0:
         distance = np.linalg.norm(AP)
     elif projection > 1:
@@ -162,9 +176,18 @@ def distance_to_edge(vertex,boundaryedge,deldist=0.1):
     else:
         distance = np.linalg.norm(AP - projection * (AB / magnitude_AB))
     
-    print("Distance to edge : ", distance)
+    #print("Distance to edge : ", distance)
     return (distance < deldist)
     
+
+
+def add_1_to_list_id_vertices(id_vertices):
+    for i in range(len(id_vertices)):
+        id_vertices[i] += 1
+    
+    return id_vertices
+
+
 
 def vertices_to_delete2(faces):
     """Return a list of vertices to delete from the model.
@@ -179,114 +202,16 @@ def vertices_to_delete2(faces):
     faceslist = [face.getVertexIds() for face in faces]
     verticeslist = [coords for _, coords in sorted(all_vertices.items())]
 
-    return vertices_to_delete(faceslist, verticeslist)
-
-def test():
-    
-    """addedvert = []
-    with open('example/suzanne.obja', 'w') as output:
-        output_model = obja.Output(output, random_color=False)
-        for i,face in enumerate(faceslist):
-            verts = [verticeslist[face[0]-1],verticeslist[face[1]-1],verticeslist[face[2]-1]]
-            #print("verts[0] : ", verts[0])
-            if face[0] not in addedvert:
-                output_model.add_vertex(face[0], verts[0])
-                addedvert.append(face[0])
-            if face[1] not in addedvert:
-                output_model.add_vertex(face[1], verts[1])
-                addedvert.append(face[1])
-            if face[2] not in addedvert:
-                output_model.add_vertex(face[2], verts[2])
-                addedvert.append(face[2])
-            
-            f = obja.Face(face[0],face[1],face[2])
-            if face[0] == face[1] or face[0] == face[2] or face[1] == face[2]:
-                print(("C EGAL"))
-            output_model.add_face(i, f)"""
-    """faces,_ = read_obj(obja.parse_file('example/suzanne.obj'))
-    all_vertices = {vertex.id(): vertex.getCoords() for face in faces for vertex in face.getVertices()}
-    faceslist = [face.getVertexIds() for face in faces]
-    verticeslist = [coords for _, coords in sorted(all_vertices.items())]
-    delverts = vertices_to_delete2(faces)
-    #print("Nombre de sommets à supprimer : ", len(delverts))
-    #APRES ICI : 
-    with open('example/suzanne.obja', 'w') as output:
-        output_model = obja.Output(output, random_color=True)
-        editedfaces = []
-        deletedfaces = []
-        addedvert = []
-        for face in faceslist:
-            if any (vertex in delverts for vertex in face):
-                deletedfaces.append(face)
-            else:
-                editedfaces.append(face)
-        for face in editedfaces:
-            verts = [verticeslist[face[0]-1],verticeslist[face[1]-1],verticeslist[face[2]-1]]
-            #print("verts[0] : ", verts[0])
-            if face[0] not in addedvert:
-                output_model.add_vertex(face[0], verts[0])
-                addedvert.append(face[0])
-            if face[1] not in addedvert:
-                output_model.add_vertex(face[1], verts[1])
-                addedvert.append(face[1])
-            if face[2] not in addedvert:
-                output_model.add_vertex(face[2], verts[2])
-                addedvert.append(face[2])
-            f = obja.Face(face[0],face[1],face[2])
-            output_model.add_face(0, f)
-        for i,face in enumerate(deletedfaces):
-            verts = [verticeslist[face[0]-1],verticeslist[face[1]-1],verticeslist[face[2]-1]]
-            #print("verts[0] : ", verts[0])
-            if face[0] not in addedvert:
-                output_model.add_vertex(face[0], verts[0])
-                addedvert.append(face[0])
-            if face[1] not in addedvert:
-                output_model.add_vertex(face[1], verts[1])
-                addedvert.append(face[1])
-            if face[2] not in addedvert:
-                output_model.add_vertex(face[2], verts[2])
-                addedvert.append(face[2])
-            f = obja.Face(face[0],face[1],face[2])
-            output_model.add_face(i, f)"""
-    mesh = o3d.io.read_triangle_mesh('example/bunny.obj')
-    # Transformer le mesh en numpy arrays pour faciliter les manipulations
-    vertices = np.asarray(mesh.vertices)
-    triangles = np.asarray(mesh.triangles)
-    delverts = vertices_to_delete(triangles,vertices)
-    print("delverts[0] : ", delverts[0])
-    print("delverts[1] : ", delverts[1])
-    print("delverts[2] : ", delverts[2])
-    print("vertice de delverts[0]  : ", vertices[delverts[0]])
-    print("vertice de delverts[1]  : ", vertices[delverts[1]])
-    print("vertice de delverts[2]  : ", vertices[delverts[2]])
-    vertex_colors = np.ones((len(np.asarray(mesh.vertices)), 3)) * [0, 1, 0]  # Vert par défaut
-
-    # Changer la couleur des sommets qui doivent être supprimés en rouge
-    vertex_colors[delverts] = [1, 0, 0]  # Rouge pour les sommets à supprimer
-
-    mesh.vertex_colors = o3d.utility.Vector3dVector(vertex_colors)
-
-    edges = np.asarray(mesh.triangles).reshape(-1, 3)
-    lines = [[edges[i, 0], edges[i, 1]] for i in range(edges.shape[0])] + \
-            [[edges[i, 1], edges[i, 2]] for i in range(edges.shape[0])] + \
-            [[edges[i, 2], edges[i, 0]] for i in range(edges.shape[0])]
+    vertices_to_del = vertices_to_delete(faceslist, verticeslist)
+    return vertices_to_del
 
 
-    line_set = o3d.geometry.LineSet(
-        points=o3d.utility.Vector3dVector(np.asarray(mesh.vertices)),
-        lines=o3d.utility.Vector2iVector(lines),
-    )
-
-
-    line_colors = np.ones((len(lines), 3)) * [0, 0, 1]
-    line_set.colors = o3d.utility.Vector3dVector(line_colors)
-
-    o3d.visualization.draw_geometries([mesh, line_set])
-    o3d.io.write_triangle_mesh("mon_maillage.ply", mesh)
 
 
 def main():
-    test()
+    faces,_ = read_obj0(obja.parse_file('example/suzanne.obj'))
+    delverts = vertices_to_delete2(faces)
+    print(delverts)
 
 if __name__ == "__main__":
     main()
