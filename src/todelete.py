@@ -38,20 +38,31 @@ def classify_vertex(vertex, triangles):
 def is_cycle(triangles):
     """Check if the triangles form a cycle around the vertex."""
     visited_triangles = set()
-    queue = [triangles[0]]
+    start_triangle = set(triangles[0])
+    current_triangle = start_triangle
     
-    while queue:
-        current_triangle = queue.pop()
-        if tuple(current_triangle) in visited_triangles:
-            continue
-        visited_triangles.add(tuple(current_triangle))
+    while True:
+        visited_triangles.add(tuple(sorted(list(current_triangle))))
         
-        for neighbor_triangle in triangles:
-            if tuple(neighbor_triangle) not in visited_triangles and \
-               len(set(current_triangle).intersection(set(neighbor_triangle))) == 2:
-                queue.append(neighbor_triangle)
-                
+        # Find a neighboring triangle
+        next_triangle = None
+        for triangle in triangles:
+            if tuple(sorted(triangle)) in visited_triangles:
+                continue
+            if len(current_triangle.intersection(set(triangle))) == 2:
+                next_triangle = set(triangle)
+                break
+        
+        # If no neighboring triangle is found
+        if next_triangle is None:
+            break
+        
+        current_triangle = next_triangle
+
+    # Check if all triangles have been visited
     return len(visited_triangles) == len(triangles)
+
+
 
 def vertices_to_delete(faces,vertices):
     """Return a list of vertices to delete from the model.
@@ -76,20 +87,23 @@ def vertices_to_delete(faces,vertices):
         #print("Vertex est : ", vertex)
         if is_cycle(trianglelist):
             #simple
-            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.4)
+            #print("On cycle")
+            toDelete = False#distance_to_plane(vertex,trianglelist,vertices,deldist=1)
         else:
+            print("On cycle pas")
             #boundary or complexe
             type,boundaryedge = classify_vertex(vertex, trianglelist)
             if type == "boundary":
-                toDelete = distance_to_edge(vertex,boundaryedge,deldist=0.6)
+                print("On est sur un boundary")
+                toDelete = distance_to_edge(vertex,boundaryedge,deldist=10)
             elif type == "complex" or "unclassified":
                 toDelete = False
         if toDelete and not (vertex in forbidden_vertices):
             vertices_to_delete.append(vertex)
             forbidden_vertices.add(vertex)  # Add the current vertex to forbidden_vertices
             # Add adjacent vertices of the deleted vertex to the forbidden set
-            print("trianglelist : ", trianglelist)
-            print("vertex : ", vertex)
+            """print("trianglelist : ", trianglelist)
+            print("vertex : ", vertex)"""
             for triangle in trianglelist:
                 for adj_vertex_index in triangle:
                     """print("triangle : ", triangle)
@@ -148,7 +162,7 @@ def distance_to_edge(vertex,boundaryedge,deldist=0.1):
     else:
         distance = np.linalg.norm(AP - projection * (AB / magnitude_AB))
     
-    #print("Distance to edge : ", distance)
+    print("Distance to edge : ", distance)
     return (distance < deldist)
     
 
@@ -234,7 +248,7 @@ def test():
                 addedvert.append(face[2])
             f = obja.Face(face[0],face[1],face[2])
             output_model.add_face(i, f)"""
-    mesh = o3d.io.read_triangle_mesh('example/suzanne.obj')
+    mesh = o3d.io.read_triangle_mesh('example/bunny.obj')
     # Transformer le mesh en numpy arrays pour faciliter les manipulations
     vertices = np.asarray(mesh.vertices)
     triangles = np.asarray(mesh.triangles)
@@ -252,23 +266,21 @@ def test():
 
     mesh.vertex_colors = o3d.utility.Vector3dVector(vertex_colors)
 
-    # Extraire les arêtes du maillage
     edges = np.asarray(mesh.triangles).reshape(-1, 3)
     lines = [[edges[i, 0], edges[i, 1]] for i in range(edges.shape[0])] + \
             [[edges[i, 1], edges[i, 2]] for i in range(edges.shape[0])] + \
             [[edges[i, 2], edges[i, 0]] for i in range(edges.shape[0])]
 
-    # Créer un LineSet à partir des arêtes
+
     line_set = o3d.geometry.LineSet(
         points=o3d.utility.Vector3dVector(np.asarray(mesh.vertices)),
         lines=o3d.utility.Vector2iVector(lines),
     )
 
-    # Définir la couleur des lignes (par exemple, bleu)
+
     line_colors = np.ones((len(lines), 3)) * [0, 0, 1]
     line_set.colors = o3d.utility.Vector3dVector(line_colors)
 
-    # Visualiser à la fois le maillage triangulaire et le wireframe
     o3d.visualization.draw_geometries([mesh, line_set])
     o3d.io.write_triangle_mesh("mon_maillage.ply", mesh)
 
