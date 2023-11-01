@@ -94,8 +94,6 @@ def vertices_to_delete(faces,vertices):
     Returns:
         list: List of vertices to delete from the model.
     """
-
-
     forbidden_vertices = set()
 
     triangles_per_vertex = [[] for i in range(len(vertices))]
@@ -105,18 +103,23 @@ def vertices_to_delete(faces,vertices):
             triangles_per_vertex[vertex].append(face)
     vertices_to_delete = []
     for vertex,trianglelist in enumerate(triangles_per_vertex):
+        edges = [get_edges(triangle) for triangle in trianglelist]
+        flat_edges = [edge for triangle_edges in edges for edge in triangle_edges]
+        edge_lengths = [np.linalg.norm(np.array(edge[1]) - np.array(edge[0])) for edge in flat_edges]
+        mean_edge_length = np.mean(edge_lengths)
+        print("mean_edge_length : ", mean_edge_length)
         #print("Trianglelist est : ", trianglelist)
         #print("Vertex est : ", vertex)
         if is_cycle(trianglelist):
             #print("cycle")
             #simple
-            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.01)
+            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.00015,edgelmoy=mean_edge_length)
         else:
             #boundary or complexe
             #print("pas de cycle")
             type,boundaryedge = classify_vertex(vertex, trianglelist)
             if type == "boundary":
-                toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1)
+                toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.0015,edgelmoy=mean_edge_length)
             elif type == "complex" or "unclassified":
                 toDelete = False
         if toDelete and not (vertex in forbidden_vertices):
@@ -134,7 +137,7 @@ def vertices_to_delete(faces,vertices):
     
     return vertices_to_delete
 
-def distance_to_plane(vertex,triangles,vertices,deldist=0.2):
+def distance_to_plane(vertex,triangles,vertices,deldist=0.2,edgelmoy=1):
     """Return True if the vertex is close enough to the plane formed by the triangles.
     
     Args:
@@ -145,7 +148,6 @@ def distance_to_plane(vertex,triangles,vertices,deldist=0.2):
         bool: True if the vertex is close enough to the plane formed by the triangles.
     """
     normals = np.array([compute_normal(triangle,vertices) for triangle in triangles])
-    
     """print("Vertex:", vertices[vertex])
 
     print("Computed normals[0]:", normals[0])"""
@@ -157,9 +159,9 @@ def distance_to_plane(vertex,triangles,vertices,deldist=0.2):
     print("Norm: ", norm)"""
     #print("Distance: ", distance)
     
-    return (distance < deldist) #conditionner la distance par la moyenne des longueurs des edge du vertex, ça marchera mieux (pas besoin de changer de thershold pour chaque mesh)
+    return (distance/edgelmoy < deldist) #conditionner la distance par la moyenne des longueurs des edge du vertex, ça marchera mieux (pas besoin de changer de thershold pour chaque mesh)
 
-def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1):
+def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1,edgelmoy=1):
     """Return True if the vertex is close enough to the edge formed by the triangles.
     
     Args:
@@ -189,7 +191,7 @@ def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1):
         distance = np.linalg.norm(AP - projection * (AB / magnitude_AB))
     
     print("Distance to edge : ", distance)
-    return (distance < deldist)
+    return (distance/edgelmoy < deldist)
     
 
 
