@@ -1,6 +1,7 @@
 
 import obja
 import numpy as np
+from collections import Counter
 # import open3d as o3d
 
 from io_obj.read_obj import read_obj,read_obj0
@@ -29,10 +30,16 @@ def classify_vertex(vertex, triangles):
             return "complex",None
     
     boundary_edge = []
+    bound=False
     for edge, count in edge_counts.items():
         if vertex in edge and count == 1:
-            boundary_edge = edge #probleme ici, il faut bien définir le boundary edge
-            return "boundary",boundary_edge
+            boundary_edge.append(edge) #probleme ici, il faut bien définir le boundary edge
+            bound = True
+    if bound:
+        flv = [v for edge in boundary_edge for v in edge]
+        vertex_counts = Counter(flv)
+        new_edge = [vertex for vertex, count in vertex_counts.items() if count == 1]
+        return "boundary",new_edge
         
     #rajouter classification corner, qu'il ne faudra pas supprrimer
     
@@ -47,14 +54,23 @@ def classify_vertex(vertex, triangles):
 
 def is_cycle(triangles):
     """Check if the triangles form a cycle around the vertex."""
+    if len(triangles) == 1:
+         return dumb_cycle(triangles)
+    else:
+        return (dumb_cycle(triangles) and dumb_cycle(triangles, triangles[1]))
+     #Il faudrait refaire le parcour en partant d'un autre triangle de l'ensemble de triangle et vérifier que les taille sont égale
+     #C'est fait, à tester
+
+def dumb_cycle(triangles,start_triangle=None):
     visited_triangles = set()
-    start_triangle = set(triangles[0])
+    if start_triangle is None:
+        start_triangle = set(triangles[0])
+    else:
+        start_triangle = set(start_triangle)
     current_triangle = start_triangle
     
     while True:
         visited_triangles.add(tuple(sorted(list(current_triangle))))
-        
-        
         next_triangle = None
         for triangle in triangles:
             if tuple(sorted(triangle)) in visited_triangles:
@@ -62,15 +78,11 @@ def is_cycle(triangles):
             if len(current_triangle.intersection(set(triangle))) == 2:
                 next_triangle = set(triangle)
                 break
-        
         # If no neighboring triangle is found
         if next_triangle is None:
-            break
-        
+            break 
         current_triangle = next_triangle
-
-    
-    return len(visited_triangles) == len(triangles) #Il faudrait refaire le parcour en partant d'un autre triangle de l'ensemble de triangle et vérifier que les taille sont égale
+    return len(visited_triangles) == len(triangles)
 
 
 def vertices_to_delete(faces,vertices):
@@ -142,8 +154,8 @@ def distance_to_plane(vertex,triangles,vertices,deldist=0.2):
     norm = np.linalg.norm(average_normal)
     distance = abs(dot_product) / norm
     """print("Dot product: ", dot_product)
-    print("Norm: ", norm)
-    print("Distance: ", distance)"""
+    print("Norm: ", norm)"""
+    #print("Distance: ", distance)
     
     return (distance < deldist) #conditionner la distance par la moyenne des longueurs des edge du vertex, ça marchera mieux (pas besoin de changer de thershold pour chaque mesh)
 
@@ -176,7 +188,7 @@ def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1):
     else:
         distance = np.linalg.norm(AP - projection * (AB / magnitude_AB))
     
-    #print("Distance to edge : ", distance)
+    print("Distance to edge : ", distance)
     return (distance < deldist)
     
 
