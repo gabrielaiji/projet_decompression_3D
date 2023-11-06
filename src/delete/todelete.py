@@ -107,7 +107,7 @@ def vertices_to_delete(faces,vertices):
         flat_edges = [edge for triangle_edges in edges for edge in triangle_edges]
         edge_lengths = [np.linalg.norm(np.array(edge[1]) - np.array(edge[0])) for edge in flat_edges]
         mean_edge_length = np.mean(edge_lengths)
-        print("mean_edge_length : ", mean_edge_length)
+        #print("mean_edge_length : ", mean_edge_length)
         #print("Trianglelist est : ", trianglelist)
         #print("Vertex est : ", vertex)
         if is_cycle(trianglelist):
@@ -172,8 +172,8 @@ def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1,edgelmoy=1):
     Returns:
         bool: True if the vertex is close enough to the edge formed by the triangles.
     """
-    A = vertices[boundaryedge[0]]
-    B = vertices[boundaryedge[1]]
+    A = np.array(vertices[boundaryedge[0]])
+    B = np.array(vertices[boundaryedge[1]])
     #print("vertex : ", vertices[vertex])
     AP = np.array(vertices[vertex]) - A
     AB = B - A
@@ -190,7 +190,7 @@ def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1,edgelmoy=1):
     else:
         distance = np.linalg.norm(AP - projection * (AB / magnitude_AB))
     
-    print("Distance to edge : ", distance)
+    #print("Distance to edge : ", distance)
     return (distance/edgelmoy < deldist)
     
 

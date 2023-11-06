@@ -52,9 +52,9 @@ list_faces, list_vertices = read_obj0(model)
 ind_vertices_to_delete = vertices_to_delete2(list_faces)
 # Pour cet exemple, on annule la suppression des vertices sur les bords
 ind_vertices_to_delete.remove(0)
-ind_vertices_to_delete.remove(3)
-ind_vertices_to_delete.remove(8)
-ind_vertices_to_delete.remove(18)
+#ind_vertices_to_delete.remove(3)
+"""ind_vertices_to_delete.remove(8)
+ind_vertices_to_delete.remove(18)"""
 print(ind_vertices_to_delete)
 
 # Test créer les patchs
