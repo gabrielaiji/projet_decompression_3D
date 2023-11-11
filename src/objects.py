@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import List
+
 class Vertex:
 
 	def __init__(self, v_id: int, x: float, y: float, z: float):
@@ -21,7 +23,7 @@ class Vertex:
 	def setZ(self, z: float):
 		self._z = z
 
-	def getCoords(self) -> list[float]:
+	def getCoords(self) -> List[float]:
 		return [self._x, self._y, self._z]
 	
 	def toString(self):
@@ -56,7 +58,7 @@ class Vertex:
 
 class Face:
 
-	def __init__(self, f_id: int, vertices: list[Vertex]):
+	def __init__(self, f_id: int, vertices: List[Vertex]):
 		self._id = f_id
 		self._vertices = vertices
 		self._color = None
@@ -67,19 +69,19 @@ class Face:
 	def setId(self, id: int):
 		self._id = id
 
-	def getVertices(self) -> list[Vertex]:
+	def getVertices(self) -> List[Vertex]:
 		return self._vertices
 
-	def setColor(self, color: list[float]):
+	def setColor(self, color: List[float]):
 		self._color = color
 
-	def getColor(self) -> list[float]:
+	def getColor(self) -> List[float]:
 		return self._color
 
-	def getVertexCoords(self) -> list[list[float]]:
+	def getVertexCoords(self) -> List[List[float]]:
 		return list(map(lambda vertex : vertex.getCoords(), self._vertices))
 
-	def getVertexIds(self) -> list[list[int]]:
+	def getVertexIds(self) -> List[List[int]]:
 		return list(map(lambda vertex : vertex.id(), self._vertices))
 
 	def id(self) -> int:
@@ -104,27 +106,27 @@ class Face:
 
 class Patch:
 
-	def __init__(self, p_id: int, faces: list[Face], deleted_Vertex: Vertex):
+	def __init__(self, p_id: int, faces: List[Face], deleted_Vertex: Vertex):
 		self._id = p_id
 		self._faces = faces
 		self._color = None
 		self._deleted_vertex = deleted_Vertex
 
-	def setColor(self, color: list[float]):
+	def setColor(self, color: List[float]):
 		for face in self._faces:
 			face.setColor(color)
 		self._color = color
 
-	def getColor(self) -> list[float]:
+	def getColor(self) -> List[float]:
 		return self._color
 	
-	def getDeletedVertexCoords(self) -> list[float]:
+	def getDeletedVertexCoords(self) -> List[float]:
 		return self._deleted_vertex.getCoords()
 	
-	def getFaces(self) -> list[Face]:
+	def getFaces(self) -> List[Face]:
 		return self._faces
 
-	def getVertices(self) -> list[Vertex]:
+	def getVertices(self) -> List[Vertex]:
 		vertices_dico = {}
 
 		for face in self._faces:
@@ -136,16 +138,16 @@ class Patch:
 
 		return vertices_dico.values()
 
-	def getVertexCoords(self) -> list[list[float]]:
+	def getVertexCoords(self) -> List[List[float]]:
 		return list(map(lambda vertex : vertex.getCoords(), self.getVertices()))
 
-	def getVertexIds(self) -> list[list[int]]:
+	def getVertexIds(self) -> List[List[int]]:
 		return list(map(lambda vertex : vertex.id(), self.getVertices()))
 	
-	def setDisplacementVector(self, vector: list[float]):
+	def setDisplacementVector(self, vector: List[float]):
 		self._displacement_vector = vector
 	
-	def getDisplacementVector(self) -> list[float]:
+	def getDisplacementVector(self) -> List[float]:
 		return self._displacement_vector
 
 	def id(self) -> int:

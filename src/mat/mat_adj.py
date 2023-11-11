@@ -1,6 +1,8 @@
 import numpy as np
 from objects import Patch
 
+from typing import List
+
 # Ajouter une valeur dans un dictionnaire
 # IN : 
 # dict : Le dictionnaire en question
@@ -16,7 +18,7 @@ def add_values_in_dict(dict, key, value_to_add):
     return dict
 
 
-def create_mat_adj(l_patch: list[Patch]):
+def create_mat_adj(l_patch: List[Patch]):
 
     nb_sommets = len(l_patch)
     mat_adj = np.zeros((nb_sommets, nb_sommets), dtype=int)

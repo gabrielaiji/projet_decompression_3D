@@ -1,15 +1,15 @@
 import numpy as np
-from typing import Any
+from typing import Any, List, Dict
 from itertools import permutations
 import copy
 
-def add_values_in_dict(dict: dict[Any, list], key, value_to_add):
+def add_values_in_dict(dict: Dict[Any, List], key, value_to_add):
     if key not in dict:
         dict[key] = list()
     dict[key].append(value_to_add)
     return dict
 
-def dsatur(adjacency: list[list[int]], k: int):
+def dsatur(adjacency: List[List[int]], k: int):
     """
     Colors the vertices with k colors at most according to 
     the DSATUR algorithme. It is not sure to find a solution
@@ -51,7 +51,7 @@ def dsatur(adjacency: list[list[int]], k: int):
 
 
 
-def dsatur_modif(adjacency: list[list[int]], k: int):
+def dsatur_modif(adjacency: List[List[int]], k: int):
     """
     Colors the vertices with k colors at most. It is inspired
     from the DSATUR algorithm. If a solution exists, it will

@@ -1,10 +1,12 @@
 from objects import Vertex, Face, Patch
 from .order_vertices import orderVertices
 
+from typing import List, Tuple, Dict
 
 
-def create_all_patches(list_vertices_to_delete: list[Vertex], id_f_start: int)\
-    -> tuple[dict[int, dict[str, list[Face]|Patch]], list[Patch]]:
+
+def create_all_patches(list_vertices_to_delete: List[Vertex], id_f_start: int)\
+    -> Tuple[Dict[int, Dict[str, List[Face]|Patch]], List[Patch]]:
 
     patches = {}
     lst_patches = []
@@ -23,7 +25,7 @@ def create_all_patches(list_vertices_to_delete: list[Vertex], id_f_start: int)\
     return patches, lst_patches
 
 
-def create_z_simple(liste_vertices: list[Vertex], id_f_start: int):
+def create_z_simple(liste_vertices: List[Vertex], id_f_start: int):
 
     result: list[Face] = []
 

@@ -1,6 +1,8 @@
 from objects import Vertex, Face
 
-def write_obj(list_vertices: list[Vertex], list_faces: list[Face]):
+from typing import List
+
+def write_obj(list_vertices: List[Vertex], list_faces: List[Face]):
 
     output_file = "../example/figure1_colore_exp.obj"
 
