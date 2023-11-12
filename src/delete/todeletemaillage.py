@@ -1,12 +1,14 @@
 from objects import Mesh, Vertex
-from .todelete import vertices_to_delete2
+from .todelete import vertices_to_delete2, vertices_to_delete3
 
 from typing import List
 
 
 def getVerticesToDelete(maillage: Mesh) -> List[Vertex]:
-    list_faces = maillage.getFaces()
-    ind_vertices_to_delete = vertices_to_delete2(list_faces)
+    print("longueur de getfaces", len(maillage.getFaces()))
+    
+
+    ind_vertices_to_delete = vertices_to_delete3(maillage)
     
     return maillage.getVerticesFromId(ind_vertices_to_delete)
 

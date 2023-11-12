@@ -17,6 +17,9 @@ def orderVertices(faces: List[Face], v_delete: Vertex) -> List[Vertex]:
     """
 
     related_v = {}
+    print(len(faces))
+    if len(faces) == 0:
+        return [v_delete]
     for i, face in enumerate(faces):
         vertices = face.getVertices()
         vertices.remove(v_delete)
@@ -35,8 +38,15 @@ def orderVertices(faces: List[Face], v_delete: Vertex) -> List[Vertex]:
         potential_next_v = related_v[ordered_v[i]]
 
         potential_indice = 0
-        while potential_next_v[potential_indice] in ordered_v:
+        
+        stop = False
+        while not stop and (potential_next_v[potential_indice] in ordered_v):
             potential_indice +=1
+            
+            if (potential_indice >= len(potential_next_v)):
+                stop = True
+                potential_indice = potential_indice - 1
+                
         
         ordered_v.append(potential_next_v[potential_indice])
     

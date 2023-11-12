@@ -57,7 +57,7 @@ ind_vertices_to_delete = getIndVerticesToDelete(mesh)
 print(ind_vertices_to_delete)
 
 # Pour cet exemple, on annule la suppression des vertices sur les bords
-ind_vertices_to_delete.remove(0)
+#ind_vertices_to_delete.remove(0)
 #ind_vertices_to_delete.remove(3)
 """ind_vertices_to_delete.remove(8)
 ind_vertices_to_delete.remove(18)"""
