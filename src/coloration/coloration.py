@@ -2,9 +2,11 @@ from objects import Patch
 from mat.mat_adj import create_mat_adj
 from .dsatur import dsatur_modif
 
+from typing import List
+
 couleurs = [(1., 0., 0.), (0., 1., 0.), (1., 1., 0.)]
 
-def color_with_dsatur(l_patch: list[Patch], nb_color):
+def color_with_dsatur(l_patch: List[Patch], nb_color):
     """
     Colors the patches, and the faces according to
     the DSATUR (modified) algorithm.
@@ -32,7 +34,7 @@ def add_values_in_dict(dict, key, value_to_add):
 # Colorer les patch fourni en paramètres
 # IN : l_patch : la liste des patch à colorier
 # OUT : result : la liste des patch avec la couleur attribuée
-def colorer(l_patch: list[Patch]):
+def colorer(l_patch: List[Patch]):
     result = {}
 
     # On crée 2 dicos, un qui lie les vertices au patchs (dico_v_patch) et l'autre qui lie les patchs au vertices (dico_patch_v)

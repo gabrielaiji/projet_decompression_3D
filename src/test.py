@@ -15,14 +15,14 @@ faces = [(1, 2, 5),
 print(vertices_to_delete(faces, vertices))"""
 
 import obja
-from io_obj.read_obj import read_obj, read_obj0
+from io_obj.read_obj import read_obj, read_obj0, read_Mesh
 from coloration.coloration import color_with_dsatur
 from objects import Patch, Vertex
 from mat.mat_adj import create_mat_adj
 from coloration.dsatur import dsatur_modif
-from io_obj.write_obj import write_obj
-from delete.todelete import vertices_to_delete2
-from patch.create import create_all_patches
+from io_obj.write_obj import write_mesh
+from delete.todeletemaillage import getIndVerticesToDelete
+from patch.create import patch_mesh
 
 
 
@@ -48,27 +48,24 @@ write_obj(list_vertices, list_faces)"""
 
 # Test trouver les sommets à supprimer
 model = obja.parse_file('../example/figure1_raw.obj')
-list_faces, list_vertices = read_obj0(model)
-ind_vertices_to_delete = vertices_to_delete2(list_faces)
+mesh = read_Mesh(model)
+
+
+# Utiliser getVerticesToDelete qui renvoie directement
+# les vertices s'il n'y a pas de vertices à supprimé
+ind_vertices_to_delete = getIndVerticesToDelete(mesh)
+print(ind_vertices_to_delete)
+
 # Pour cet exemple, on annule la suppression des vertices sur les bords
 ind_vertices_to_delete.remove(0)
-ind_vertices_to_delete.remove(3)
-ind_vertices_to_delete.remove(8)
-ind_vertices_to_delete.remove(18)
+#ind_vertices_to_delete.remove(3)
+"""ind_vertices_to_delete.remove(8)
+ind_vertices_to_delete.remove(18)"""
 print(ind_vertices_to_delete)
 
 # Test créer les patchs
-list_vertices_to_delete = []
-for i in range(len(ind_vertices_to_delete)):
-    list_vertices_to_delete.append(list_vertices[ind_vertices_to_delete[i]])
-patches, lst_patches = create_all_patches(list_vertices_to_delete, list_faces[-1].id() + 1)
+list_vertices_to_delete = mesh.getVerticesFromId(ind_vertices_to_delete)
+patch_mesh(mesh, list_vertices_to_delete)
 
-# Test coloration bis
-color_with_dsatur(lst_patches, 3)
-for patch_id in patches:
-    dico_patch = patches[patch_id]
-    for old_face in dico_patch["old_faces"]:
-        list_faces.remove(old_face)
-    list_faces = list_faces + dico_patch["new_faces"]
-    list_vertices.remove(dico_patch["patch"]._deleted_vertex)
-write_obj(list_vertices, list_faces)
+output_file = "../example/figure1_colore_exp.obj"
+write_mesh(mesh, output_file)

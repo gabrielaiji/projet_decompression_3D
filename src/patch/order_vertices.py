@@ -1,8 +1,10 @@
 from objects import Vertex, Face
 from coloration.dsatur import add_values_in_dict
 
+from typing import List
 
-def orderVertices(faces: list[Face], v_delete: Vertex) -> list[Vertex]:
+
+def orderVertices(faces: List[Face], v_delete: Vertex) -> List[Vertex]:
     """
     Orders the vertices in a patch to
     make it easier to create the faces

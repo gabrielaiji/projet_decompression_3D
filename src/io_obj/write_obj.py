@@ -1,8 +1,13 @@
-from objects import Vertex, Face
+from objects import Vertex, Face, Mesh
 
-def write_obj(list_vertices: list[Vertex], list_faces: list[Face]):
+from typing import List
 
-    output_file = "../example/figure1_colore_exp.obj"
+def write_mesh(mesh: Mesh, output_file: str):
+    write_obj(mesh.getVertices(), mesh.getFaces(), output_file)
+
+def write_obj(list_vertices: List[Vertex],
+              list_faces: List[Face],
+              output_file):
 
     # On redéfinit les ids pour pas qu'il y ait de "trous"
     for (vertex_index, _) in enumerate(list_vertices):
@@ -17,9 +22,11 @@ def write_obj(list_vertices: list[Vertex], list_faces: list[Face]):
             f.write(f"v {vertex.x()} {vertex.y()} {vertex.z()}\n")
 
         for face in list_faces:
-            f.write(f"f {face.getVertices()[0].id()} {face.getVertices()[1].id()} {face.getVertices()[2].id()}\n")
+            vertex_ids = face.getVertexIds()
+            f.write(f"f {vertex_ids[0]} {vertex_ids[1]} {vertex_ids[2]}\n")
 
         # Coloration
         for face in list_faces:
             if face.getColor() != None:
-                f.write(f"fc {face.id()} {face.getColor()[0]} {face.getColor()[1]} {face.getColor()[2]}\n")
+                color = face.getColor()
+                f.write(f"fc {face.id()} {color[0]} {color[1]} {color[2]}\n")

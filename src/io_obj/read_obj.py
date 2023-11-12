@@ -1,5 +1,5 @@
 import obja
-from objects import Vertex, Face
+from objects import Vertex, Face, Mesh
 
 def read_obj(obj:obja.Model):
 
@@ -30,4 +30,8 @@ def read_obj0(obj:obja.Model):
         my_face = Face(face_index , list_3_vertices) # "+ 1" car les indices commencent à partir de 1
         list_faces.append(my_face)
 
-    return list_faces, list_vertices 
+    return list_faces, list_vertices
+
+def read_Mesh(obj: obja.Model):
+    list_faces, list_vertices = read_obj0(obj)
+    return Mesh(list_vertices, list_faces)

@@ -1,7 +1,9 @@
 from objects import Patch
 import numpy as np
 
-def predict(lst_patches: list[Patch]):
+from typing import List
+
+def predict(lst_patches: List[Patch]):
     
 	for patch in lst_patches:
 		vertices_coord = patch.getVertexCoords()
