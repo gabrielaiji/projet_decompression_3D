@@ -15,6 +15,10 @@ def compute_normal(triangle,vertices):
     """Compute the normal of a triangle."""
     v1 = np.array(vertices[triangle[1]-1]) - np.array(vertices[triangle[0]-1])
     v2 = np.array(vertices[triangle[2]-1]) - np.array(vertices[triangle[0]-1])
+    """print("v1 : ", v1)
+    print("v2 : ", v2)
+    print("triange[2] : ", triangle[2])
+    print("vertices[triangle[2]-1] : ", vertices[triangle[2]-1])"""
     normal = np.cross(v1, v2)
     return normal / np.linalg.norm(normal)
 
@@ -103,7 +107,7 @@ def vertices_to_delete(faces,vertices):
     for face in faces:
         
         for vertex in face:
-            #print("C'est l'indice du vertex : ", str(vertex)+ " or la liste est de taille : ", str(len(triangles_per_vertex)))
+            #print("C'est l'indice du vertex : ", str(vertex)+ " or la liste est de taille(nombre de vertex) : ", str(len(triangles_per_vertex)))
             
             triangles_per_vertex[vertex].append(face)
     vertices_to_delete = []
@@ -120,16 +124,18 @@ def vertices_to_delete(faces,vertices):
         elif is_cycle(trianglelist):
             #print("cycle")
             #simple
-            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.0015,edgelmoy=mean_edge_length)
+            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.001,edgelmoy=mean_edge_length)
         else:
             #boundary or complexe
             #print("pas de cycle")
             type,boundaryedge = classify_vertex(vertex, trianglelist)
             if type == "boundary":
-                toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.015,edgelmoy=mean_edge_length)
+                toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.01,edgelmoy=mean_edge_length)
                 
             elif type == "complex" or "unclassified":
                 toDelete = False
+        """print("juste anvant le if, vertex est : ", vertex)
+        print("juste avant le if, toDelete est : ", toDelete)"""
         if toDelete and not (vertex in forbidden_vertices):
             vertices_to_delete.append(vertex)
             forbidden_vertices.add(vertex)  # Add the current vertex to forbidden_vertices
@@ -165,8 +171,12 @@ def distance_to_plane(vertex,triangles,vertices,deldist=0.2,edgelmoy=1):
     distance = abs(dot_product) / norm
     """print("Dot product: ", dot_product)
     print("Norm: ", norm)"""
-    #print("Distance: ", distance)
-    
+    """print("Average normal: ", average_normal)
+    print("Vertex: ", vertices[vertex])
+    print("Dot product: ", dot_product)
+    print("norm: ", norm)
+    print("Distance to plane: ", distance)
+    """
     return (distance/edgelmoy < deldist) #conditionner la distance par la moyenne des longueurs des edge du vertex, ça marchera mieux (pas besoin de changer de thershold pour chaque mesh)
 
 def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1,edgelmoy=1):
@@ -225,7 +235,12 @@ def vertices_to_delete2(faces):
 
     all_vertices = {vertex.id(): vertex.getCoords() for face in faces for vertex in face.getVertices()}
     faceslist = [face.getVertexIds() for face in faces]
-    verticeslist = [coords for _, coords in sorted(all_vertices.items())]
+    range = max([max(face) for face in faceslist])
+    verticeslist = [0]*(range)
+    for id,vertex in all_vertices.items():
+        print("on est dans vertices_to_delete2 et on a id et vertex : ", id, vertex)
+        verticeslist[id] = vertex
+
 
     vertices_to_del = vertices_to_delete(faceslist, verticeslist)
 
@@ -244,7 +259,13 @@ def vertices_to_delete3(maillage):
 
     
     faceslist = [face.getVertexIds() for face in maillage.getFaces()]
-    verticeslist = [vertex.getCoords() for vertex in sorted(maillage.getVertices(), key=lambda vertex: vertex.id())]
+    range = max([max(face) for face in faceslist])
+    verticeslist = [0]*(range+1)
+    for vertex in sorted(maillage.getVertices(), key=lambda vertex: vertex.id()):
+        #print("Sachant que range est : ", range)
+        #print("on est dans vertices_to_delete3 et on a vertex.id() et vertex.getCoords() : ", vertex.id(), vertex.getCoords())
+        if vertex.id() <= range:
+            verticeslist[vertex.id()] = vertex.getCoords()
 
     vertices_to_del = vertices_to_delete(faceslist, verticeslist)
 

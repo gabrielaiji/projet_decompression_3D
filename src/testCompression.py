@@ -4,7 +4,7 @@ from io_obj.write_obj import write_mesh
 from delete.todeletemaillage import getVerticesToDelete
 from patch.create import patch_mesh
 
-nb_iterations = 10
+nb_iterations = 2
 model = obja.parse_file('../example/suzanne.obj')
 mesh = read_Mesh(model)
 

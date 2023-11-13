@@ -9,7 +9,7 @@ def getVerticesToDelete(maillage: Mesh) -> List[Vertex]:
     
 
     ind_vertices_to_delete = vertices_to_delete3(maillage)
-    ind_vertices_to_delete = list(map(lambda id:id+1, ind_vertices_to_delete))
+    ind_vertices_to_delete = list(map(lambda id:id, ind_vertices_to_delete))
     
     return maillage.getVerticesFromId(ind_vertices_to_delete)
 
