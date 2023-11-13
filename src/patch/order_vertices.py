@@ -17,7 +17,7 @@ def orderVertices(faces: List[Face], v_delete: Vertex) -> List[Vertex]:
     """
 
     related_v = {}
-    print(len(faces))
+    #print(len(faces))
     if len(faces) == 0:
         return [v_delete]
     for i, face in enumerate(faces):

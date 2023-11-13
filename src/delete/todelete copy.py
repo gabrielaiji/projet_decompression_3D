@@ -11,23 +11,39 @@ def get_edges(face):
     """Return edges from a given face."""
     return [(face[0], face[1]), (face[1], face[2]), (face[0], face[2])]
 
+def common_edge(triangles):
+    """Return the common edge of the triangles."""
+    edges = [[get_edges(triangle[0]),get_edges(triangle[1])] for triangle in triangles]
+    flat_edges = [edge for triangle_edges in edges for t in triangle_edges for edge in t]
+    edge_counts = {edge: flat_edges.count(edge) for edge in flat_edges}
+    return [edge for edge, count in edge_counts.items() if count == 2]
+
+def get_feature_edges(triangles,vertices,feature_angle=0.5):
+    feature_edges = []
+    normals = np.array([compute_normal(triangle,vertices) for triangle in triangles])
+    indfeature = np.where(np.arccos(np.clip(np.dot(normals, normals.T), -1.0, 1.0)) > feature_angle)
+    trianglesfeature = [[t1,t2]for t1,t2 in zip(indfeature[0],indfeature[1])]
+    feature_edges = [common_edge(triangles) for triangles in trianglesfeature]
+    return feature_edges
+
 def compute_normal(triangle,vertices):
     """Compute the normal of a triangle."""
-    v1 = np.array(vertices[triangle[1]]) - np.array(vertices[triangle[0]])
-    v2 = np.array(vertices[triangle[2]]) - np.array(vertices[triangle[0]])
-    """print("v1 : ", v1)
-    print("v2 : ", v2)
-    print("triange[2] : ", triangle[2])
-    print("vertices[triangle[2]-1] : ", vertices[triangle[2]-1])"""
+    v1 = np.array(vertices[triangle[1]-1]) - np.array(vertices[triangle[0]-1])
+    v2 = np.array(vertices[triangle[2]-1]) - np.array(vertices[triangle[0]-1])
     normal = np.cross(v1, v2)
     return normal / np.linalg.norm(normal)
 
-def classify_vertex(vertex, triangles):
+def classify_vertex(vertex, triangles,vertices):
     """Return the classification of the vertex."""
     edges = [get_edges(triangle) for triangle in triangles]
     flat_edges = [edge for triangle_edges in edges for edge in triangle_edges]
     
+    feature_edges = get_feature_edges(triangles,vertices)
+    
+
     edge_counts = {edge: flat_edges.count(edge) for edge in flat_edges}
+
+
     
     for edge, count in edge_counts.items():
         if vertex in edge and (count < 1 or count > 2):
@@ -51,15 +67,28 @@ def classify_vertex(vertex, triangles):
     """If the dihedral angle between two
     adjacent triangles is greater than a specified feature angle,
     then a feature edge exists"""
-    
+    ftcount = 0
+    fe = []
+    for edge in feature_edges:
+        if vertex in edge:
+            ftcount += 1
+            fe.append(edge)
+    if ftcount == 2:
+        flv = [v for edge in fe for v in edge]
+        vertex_counts = Counter(flv)
+        new_edge = [vertex for vertex, count in vertex_counts.items() if count == 1]
+        return "InterioredgeVertex",new_edge
+    if ftcount >=3:
+        return "CornerVertex",None
+        
+
+
     #les deux sont des cas particulier de vertex simple (vertex qui vérifie iscycle)
         
     return "unclassified", None
 
 def is_cycle(triangles):
     """Check if the triangles form a cycle around the vertex."""
-    if len(triangles) == 0:
-        return False
     if len(triangles) == 1:
          return dumb_cycle(triangles)
     else:
@@ -103,12 +132,9 @@ def vertices_to_delete(faces,vertices):
     forbidden_vertices = set()
 
     triangles_per_vertex = [[] for i in range(len(vertices))]
-    
     for face in faces:
-        
         for vertex in face:
-            #print("C'est l'indice du vertex : ", str(vertex)+ " or la liste est de taille(nombre de vertex) : ", str(len(triangles_per_vertex)))
-            
+            #print("C'est l'indice du vertex : ", str(vertex)+ " or la liste est de taille : ", str(len(triangles_per_vertex)))
             triangles_per_vertex[vertex].append(face)
     vertices_to_delete = []
     for vertex,trianglelist in enumerate(triangles_per_vertex):
@@ -119,23 +145,18 @@ def vertices_to_delete(faces,vertices):
         #print("mean_edge_length : ", mean_edge_length)
         #print("Trianglelist est : ", trianglelist)
         #print("Vertex est : ", vertex)
-        if len(trianglelist) == 0:
-            toDelete = True
-        elif is_cycle(trianglelist):
+        if is_cycle(trianglelist):
             #print("cycle")
             #simple
-            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.001,edgelmoy=mean_edge_length)
+            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.00015,edgelmoy=mean_edge_length)
         else:
             #boundary or complexe
             #print("pas de cycle")
-            type,boundaryedge = classify_vertex(vertex, trianglelist)
+            type,boundaryedge = classify_vertex(vertex, trianglelist,vertices)
             if type == "boundary":
-                toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.01,edgelmoy=mean_edge_length)
-                
+                toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.0015,edgelmoy=mean_edge_length)
             elif type == "complex" or "unclassified":
                 toDelete = False
-        """print("juste anvant le if, vertex est : ", vertex)
-        print("juste avant le if, toDelete est : ", toDelete)"""
         if toDelete and not (vertex in forbidden_vertices):
             vertices_to_delete.append(vertex)
             forbidden_vertices.add(vertex)  # Add the current vertex to forbidden_vertices
@@ -151,32 +172,29 @@ def vertices_to_delete(faces,vertices):
     
     return vertices_to_delete
 
-def distance_to_plane(vertex,triangles,vertices,deldist=0.2,edgelmoy=1):
+def distance_to_plane(vertexind,triangles,vertices,deldist=0.2,edgelmoy=1):
     """Return True if the vertex is close enough to the plane formed by the triangles.
     
     Args:
-        vertex (list): List of 3-uplet containing the vertex coordinates.
+        vertexind (int) index of the vertex in vertices.
         triangles (list): List of triangles(List of 3-uplet containing the vertices index in their list).
+        vertices (list): List of vertices(List of 3-uplet containing the vertices coordinates).
         deldist (float): Distance that define the close enoughness.
     Returns:
         bool: True if the vertex is close enough to the plane formed by the triangles.
     """
     normals = np.array([compute_normal(triangle,vertices) for triangle in triangles])
-    """print("Vertex:", vertices[vertex])
+    print("Vertex:", vertices[vertexind])
 
-    print("Computed normals[0]:", normals[0])"""
+    print("Computed normals[0]:", normals[0])
     average_normal = np.mean(normals, axis=0)
-    dot_product = np.dot(average_normal, vertices[vertex])
+    dot_product = np.dot(average_normal, vertices[vertexind])
     norm = np.linalg.norm(average_normal)
     distance = abs(dot_product) / norm
     """print("Dot product: ", dot_product)
     print("Norm: ", norm)"""
-    """print("Average normal: ", average_normal)
-    print("Vertex: ", vertices[vertex])
-    print("Dot product: ", dot_product)
-    print("norm: ", norm)
-    print("Distance to plane: ", distance)
-    """
+    #print("Distance: ", distance)
+    
     return (distance/edgelmoy < deldist) #conditionner la distance par la moyenne des longueurs des edge du vertex, ça marchera mieux (pas besoin de changer de thershold pour chaque mesh)
 
 def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1,edgelmoy=1):
@@ -190,29 +208,27 @@ def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1,edgelmoy=1):
     Returns:
         bool: True if the vertex is close enough to the edge formed by the triangles.
     """
-    if boundaryedge and len(boundaryedge) == 2 and boundaryedge is not None:
-        A = np.array(vertices[boundaryedge[0]])
-        B = np.array(vertices[boundaryedge[1]])
-        #print("vertex : ", vertices[vertex])
-        AP = np.array(vertices[vertex]) - A
-        AB = B - A
-        magnitude_AB = np.linalg.norm(AB)
-        #print("Magnitude AB : ", magnitude_AB)
-        #print("Magnitude AP : ", np.linalg.norm(AP))
-        projection = np.dot(AP, AB) / magnitude_AB
-        
-        #print("Projection : ", projection)
-        if projection < 0:
-            distance = np.linalg.norm(AP)
-        elif projection > 1:
-            distance = np.linalg.norm(np.array(vertex) - B)
-        else:
-            distance = np.linalg.norm(AP - projection * (AB / magnitude_AB))
-        
-        #print("Distance to edge : ", distance)
-        return (distance/edgelmoy < deldist)
+    A = np.array(vertices[boundaryedge[0]])
+    B = np.array(vertices[boundaryedge[1]])
+    #print("vertex : ", vertices[vertex])
+    AP = np.array(vertices[vertex]) - A
+    AB = B - A
+    magnitude_AB = np.linalg.norm(AB)
+    #print("Magnitude AB : ", magnitude_AB)
+    #print("Magnitude AP : ", np.linalg.norm(AP))
+    projection = np.dot(AP, AB) / magnitude_AB
+    
+    #print("Projection : ", projection)
+    if projection < 0:
+        distance = np.linalg.norm(AP)
+    elif projection > 1:
+        distance = np.linalg.norm(np.array(vertex) - B)
     else:
-        return False
+        distance = np.linalg.norm(AP - projection * (AB / magnitude_AB))
+    
+    #print("Distance to edge : ", distance)
+    #print("Distance to edge normalisé : ", distance/edgelmoy)
+    return (distance/edgelmoy < deldist)
     
 
 
@@ -235,43 +251,19 @@ def vertices_to_delete2(faces):
 
     all_vertices = {vertex.id(): vertex.getCoords() for face in faces for vertex in face.getVertices()}
     faceslist = [face.getVertexIds() for face in faces]
-    range = max([max(face) for face in faceslist])
-    verticeslist = [0]*(range)
-    for id,vertex in all_vertices.items():
-        print("on est dans vertices_to_delete2 et on a id et vertex : ", id, vertex)
-        verticeslist[id] = vertex
-
+    verticeslist = [coords for _, coords in sorted(all_vertices.items())]
 
     vertices_to_del = vertices_to_delete(faceslist, verticeslist)
 
-    print("On a supprimé " + str(len(vertices_to_del)/len(np.asarray(verticeslist))*100) + "% des sommets du maillage")
+    try:
+        print("On a supprimé " + str(len(vertices_to_del)/len(np.asarray(verticeslist))*100) + "% des sommets du maillage")
+    except Exception as e:
+        print("Probleme de print de %")
+        print(e)
 
     return vertices_to_del
 
-def vertices_to_delete3(maillage):
-    """Return a list of vertices to delete from the model.
-    
-    Args:
-        maillage (Mesh): Mesh object.    
-    Returns:
-        list: List of vertices to delete from the model.
-    """
 
-    
-    faceslist = [face.getVertexIds() for face in maillage.getFaces()]
-    range = max([max(face) for face in faceslist])
-    verticeslist = [0]*(range+1)
-    for vertex in sorted(maillage.getVertices(), key=lambda vertex: vertex.id()):
-        #print("Sachant que range est : ", range)
-        #print("on est dans vertices_to_delete3 et on a vertex.id() et vertex.getCoords() : ", vertex.id(), vertex.getCoords())
-        if vertex.id() <= range:
-            verticeslist[vertex.id()] = vertex.getCoords()
-
-    vertices_to_del = vertices_to_delete(faceslist, verticeslist)
-
-    print("On a supprimé " + str(len(vertices_to_del)/len(np.asarray(verticeslist))*100) + "% des sommets du maillage")
-
-    return vertices_to_del
 
 
 def main():
