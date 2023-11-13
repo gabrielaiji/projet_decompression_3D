@@ -59,10 +59,17 @@ def create_all_patches(list_vertices_to_delete: List[Vertex], id_f_start: int)\
 
 
 def create_z_simple(liste_vertices: List[Vertex], id_f_start: int):
-    if len(liste_vertices) < 5:
-        return [], id_f_start
-
     result: list[Face] = []
+
+    if len(liste_vertices) == 4:
+        result.append(Face(id_f_start, [liste_vertices[0],liste_vertices[1],liste_vertices[2]]))
+        id_f_start += 1
+        result.append(Face(id_f_start, [liste_vertices[0],liste_vertices[2],liste_vertices[3]]))
+        id_f_start += 1
+        return result, id_f_start
+
+    if len(liste_vertices) < 3:
+        return [], id_f_start
 
     n = len(liste_vertices)
 
