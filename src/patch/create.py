@@ -7,15 +7,15 @@ from typing import List, Tuple
 def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
     id_f_start = mesh.getFaceNextId()
 
-    print("flag0")
+    print("flag0 PATCH")
 
     lst_patches, lst_v_restore, set_f_restore = create_all_patches(list_vertices_to_delete, id_f_start)
     
-    print("flag1")
+    print("flag1 PATCH")
 
     color_with_dsatur(lst_patches, 3)
 
-    print("flag2")
+    print("flag2 PATCH")
 
     lst_new_faces = [face for sublist in\
                      list(map(lambda patch: patch.getPatchFaces(), lst_patches))\
