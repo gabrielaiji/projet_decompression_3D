@@ -1,6 +1,7 @@
 from objects import Patch
 from mat.mat_adj import create_mat_adj
 from .dsatur import dsatur_modif
+from copy import copy
 
 from typing import List
 
@@ -14,8 +15,21 @@ def color_with_dsatur(l_patch: List[Patch], nb_color):
     adjacency_mat = create_mat_adj(l_patch)
     pacthes_colors = dsatur_modif(adjacency_mat, nb_color)
 
-    for patch in l_patch:
-        patch.setColor(couleurs[pacthes_colors[patch.id()-1]])
+    lst_v_restore = []
+    set_f_restore = set()
+
+    
+    for patch in copy(l_patch):
+        color = pacthes_colors[patch.id()-1]
+        if color is None:
+            lst_v_restore.append(patch.getDeletedVertex())
+            set_add_f_restore = set(patch.getDeletedFaces())
+            set_f_restore = set_f_restore.union(set_add_f_restore)
+            l_patch.remove(patch)
+        else:
+            patch.setColor(couleurs[color])
+    
+    return lst_v_restore, set_f_restore
 
 # Ajouter une valeur dans un dictionnaire
 # IN : 

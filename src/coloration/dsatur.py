@@ -2,6 +2,7 @@ import numpy as np
 from typing import Any, List, Dict
 from itertools import permutations
 import copy
+from random import shuffle
 
 def add_values_in_dict(dict: Dict[Any, List], key, value_to_add):
     if key not in dict:
@@ -22,15 +23,13 @@ def dsatur(adjacency: List[List[int]], k: int):
     degrees = np.sum(adjacency, 1)
 
     sorted_indexes = np.argsort(degrees)
-    #dsatur_values = [0 for _ in range(nb_vertices)]
 
     available_colors = [[True]*k for _ in range(nb_vertices)]
     colors = [0 for _ in range(nb_vertices)]
 
     for vertex in sorted_indexes[::-1]:
         print("Vertex {} of degree {}".format(vertex+1, degrees[vertex]))
-        #if dsatur_values[vertex] >= k:
-            #colors[vertex] = None
+
         for color_i in range(k):
             # Color the vertex 
             if available_colors[vertex][color_i]:
@@ -40,7 +39,6 @@ def dsatur(adjacency: List[List[int]], k: int):
                 for voisin in range(nb_vertices):
                     if adjacency[vertex][voisin] > 0:
                         available_colors[voisin][color_i] = False
-                        #dsatur_values[voisin] += 1
                 break
             
             if color_i == k-1:
@@ -72,25 +70,37 @@ def dsatur_modif(adjacency: List[List[int]], k: int):
     present_degrees.sort(reverse=True)
 
     available_colors = [[True]*k for _ in range(nb_vertices)]
-    colors = [0 for _ in range(nb_vertices)]
+    colors = [None for _ in range(nb_vertices)]
 
+    max_permutation = 100
     for degree in present_degrees:
+        if degree == 0:
+            break
+        #print("\t\t degree ", str(degree))
         vertices = degree_registry[degree]
         vertices_permutations = list(permutations(vertices))
+        shuffle(vertices_permutations)
+        vertices_permutations \
+            = vertices_permutations[:min(max_permutation, len(vertices_permutations))]
 
-        for vertices_order in vertices_permutations:
-            found_good_order = False
+        colors_copy = copy.copy(colors)
+
+        
+        max_colored_vertices = 0
+        best_coloration_map = []        
+        for order_i, vertices_order in enumerate(vertices_permutations):
+            #print("\t\t\t order ", str(order_i))
             available_colors_copy = copy.deepcopy(available_colors)
-            go_to_next_order = False
-            vertex_order = 0
             
-            while (not go_to_next_order) and vertex_order < len(vertices_order):
-                vertex = vertices_order[vertex_order]
-                color_i = 0
+            colored_nb_vertices = 0
+            nb_vertices_in_order = len(vertices_order)
+            for vertex in vertices_order:
+                #print("\t\t\t\t vertex ", str(vertex))
                 for color_i in range(k):
                     # Color the vertex 
                     if available_colors_copy[vertex][color_i]:
-                        colors[vertex] = color_i
+                        colored_nb_vertices += 1
+                        colors_copy[vertex] = color_i
 
                         for voisin in range(nb_vertices):
                             if adjacency[vertex][voisin] > 0:
@@ -98,17 +108,16 @@ def dsatur_modif(adjacency: List[List[int]], k: int):
                         break
                     
                     elif color_i == k-1:
-                        colors[vertex] = None
-                        go_to_next_order = True
+                        colors_copy[vertex] = None
 
-                if vertex_order == len(vertices_order)-1 and (not go_to_next_order):
-                    found_good_order = True
-
-                vertex_order +=1
-            
-            if found_good_order:
+            if colored_nb_vertices == nb_vertices_in_order:
+                best_coloration_map = copy.copy(colors_copy)
                 break
+            elif colored_nb_vertices > max_colored_vertices:
+                best_coloration_map = copy.copy(colors_copy)
+                max_colored_vertices = colored_nb_vertices
         
+        colors = copy.copy(best_coloration_map)
         available_colors = copy.deepcopy(available_colors_copy)
 
     return colors
