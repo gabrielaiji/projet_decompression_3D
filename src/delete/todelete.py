@@ -68,6 +68,7 @@ def is_cycle(triangles):
      #C'est fait, à tester
 
 def dumb_cycle(triangles,start_triangle=None):
+    #print("triangles : ", triangles)
     visited_triangles = set()
     if start_triangle is None:
         start_triangle = set(triangles[0])
@@ -75,6 +76,8 @@ def dumb_cycle(triangles,start_triangle=None):
         start_triangle = set(start_triangle)
     current_triangle = start_triangle
     
+    count = 0
+
     while True:
         visited_triangles.add(tuple(sorted(list(current_triangle))))
         next_triangle = None
@@ -88,6 +91,9 @@ def dumb_cycle(triangles,start_triangle=None):
         if next_triangle is None:
             break 
         current_triangle = next_triangle
+        if count > 15:
+            return False
+        count += 1
     return len(visited_triangles) == len(triangles)
 
 
@@ -269,7 +275,14 @@ def vertices_to_delete3(maillage):
 
     vertices_to_del = vertices_to_delete(faceslist, verticeslist)
 
-    print("On a supprimé " + str(len(vertices_to_del)/len(np.asarray(verticeslist))*100) + "% des sommets du maillage")
+    
+    try:
+        print("On a supprimé " + str(len(vertices_to_del)/len(np.asarray(verticeslist))*100) + "% des sommets du maillage")
+    except:
+        try:
+            print("On a supprimé " + str(len(vertices_to_del)/len((verticeslist))*100) + "% des sommets du maillage")
+        except Exception as e:
+            print("Problème de print du '%' suppr, exception : ", e)
 
     return vertices_to_del
 
