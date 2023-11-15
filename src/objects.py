@@ -162,6 +162,11 @@ class Patch:
 	def id(self) -> int:
 		return self._id
 	
+	def delete(self):
+		for face in self.getPatchFaces():
+			face.deleteVertexReferences()
+
+	
 class Mesh:
 
 	def __init__(self, vertices: List[Vertex], faces: List[Face]):
@@ -191,11 +196,7 @@ class Mesh:
 	def getFacesFromId(self, ids:List[int]) -> List[Face]:
 		return list(map(lambda id : self.getFaceFromId(id), ids))
 
-	def removeVertices(self,
-					vertices_to_remove: List[Vertex],
-					vertices_to_restore: List[Vertex]):
-
-		vertices_to_remove = set(vertices_to_remove).difference(set(vertices_to_restore))
+	def removeVertices(self, vertices_to_remove: List[Vertex]):
 		self._vertices = self._vertices.difference(vertices_to_remove)
 
 	def addVertices(self, vertices: List[Vertex]):
@@ -203,13 +204,7 @@ class Mesh:
 		register_update = {vertex.id(): vertex for vertex in vertices}
 		self._vertex_register.update(register_update)
 
-	def removeFaces(self,
-				 faces_to_remove: List[Face],
-				 faces_to_restore: List[Face]):
-
-		faces_to_remove = set(faces_to_remove).difference(set(faces_to_restore))
-		for face in faces_to_remove:
-			face.deleteVertexReferences()
+	def removeFaces(self, faces_to_remove: List[Face]):
 		self._faces = self._faces.difference(faces_to_remove)
 	
 	def addFaces(self, faces: List[Face]):
@@ -224,7 +219,7 @@ class Mesh:
 	# Patches
 	
 	def addPatchIteration(self, patches: List[Patch]):
-		self._patches.append(patches)
+		self._patches.append(copy(patches))
 	
 	def getPatchesIterations(self) -> List[List[Patch]]:
 		copy = deepcopy(self._patches)

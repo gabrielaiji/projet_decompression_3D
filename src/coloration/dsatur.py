@@ -72,7 +72,7 @@ def dsatur_modif(adjacency: List[List[int]], k: int):
     available_colors = [[True]*k for _ in range(nb_vertices)]
     colors = [None for _ in range(nb_vertices)]
 
-    max_permutation = 100
+    max_permutation = 1000
     for degree in present_degrees:
         if degree == 0:
             break

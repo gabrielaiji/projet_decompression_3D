@@ -1,6 +1,7 @@
 from objects import Vertex, Face, Patch, Mesh
 from .order_vertices import orderVertices
 from coloration.coloration import color_with_dsatur
+from copy import copy
 
 from typing import List, Tuple
 
@@ -9,15 +10,33 @@ def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
 
     print("\tflag 0 patch")
 
-    lst_patches, lst_v_restore, set_f_restore = create_all_patches(list_vertices_to_delete, id_f_start)
-    
-    print("\tflag 1 patch")
+    lst_patches, nb_v_restored = create_all_patches(list_vertices_to_delete, id_f_start)
 
-    lst_v_restore_bis, set_f_restore_bis = color_with_dsatur(lst_patches, 3)
-    lst_v_restore = lst_v_restore + lst_v_restore_bis
-    set_f_restore = set_f_restore.union(set_f_restore_bis)
+    nb_deleted_faces_in_patches = 0
+    nb_added_faces_by_patches = 0
+    for patch in lst_patches:
+        nb_deleted_faces_in_patches += len(patch.getDeletedFaces())
+        nb_added_faces_by_patches += len(patch.getPatchFaces())
+    print("\tNb patches: ", str(len(lst_patches)))
+    print("\tNb to be deleted faces : ", str(nb_deleted_faces_in_patches))
+    print("\tNb to be added faces : ", str(nb_added_faces_by_patches))
+    print("\tNb Vertices restore due to vertex degree : ", str(nb_v_restored))
 
-    print("\tflag 2 patch")
+    print("\n\tflag 1 patch")
+    set_v_restore, set_f_restore = color_with_dsatur(lst_patches, 3)
+
+    nb_deleted_faces_in_patches = 0
+    nb_added_faces_by_patches = 0
+    for patch in lst_patches:
+        nb_deleted_faces_in_patches += len(patch.getDeletedFaces())
+        nb_added_faces_by_patches += len(patch.getPatchFaces())
+    print("\tNb patches: ", str(len(lst_patches)))
+    print("\tNb to be deleted faces : ", str(nb_deleted_faces_in_patches))
+    print("\tNb to be added faces : ", str(nb_added_faces_by_patches))
+    print("\tNb Vertices restore due to coloration : ", str(len(set_v_restore)))
+    print("\tNb Faces restore due to coloration : ", str(len(set_f_restore)))
+
+    print("\n\tflag 2 patch")
 
     lst_new_faces = [face for sublist in\
                      list(map(lambda patch: patch.getPatchFaces(), lst_patches))\
@@ -28,10 +47,13 @@ def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
                             for face in sublist]
 
     print("\tflag 3 patch")
+    print("\tDeleted Vertices nb : ", str(len(list_vertices_to_delete) - len(set_v_restore)))
+    print("\tDeleted faces nb : ", str(len(lst_deleted_faces)))
+    print("\tNew faces nb : ", str(len(lst_new_faces)))
 
-    mesh.removeFaces(lst_deleted_faces, set_f_restore)
+    mesh.removeFaces(lst_deleted_faces)
     mesh.addFaces(lst_new_faces)
-    mesh.removeVertices(list_vertices_to_delete, lst_v_restore)
+    mesh.removeVertices(list_vertices_to_delete)
     mesh.addPatchIteration(lst_patches)
 
     
@@ -40,24 +62,22 @@ def create_all_patches(list_vertices_to_delete: List[Vertex], id_f_start: int)\
     -> Tuple[List[Patch], List[Vertex], List[Face]]:
 
     lst_patches = []
-    lst_vertices_to_restore = []
-    set_faces_to_restore = set()
+    nb_v_restored = 0
     for v_to_be_deleted in list_vertices_to_delete:
         old_faces = v_to_be_deleted.getFaces()
         ordered_v = orderVertices(old_faces, v_to_be_deleted)
 
         new_faces_local, id_f_start = create_z_simple(ordered_v, id_f_start)
-        if new_faces_local == []:
-            lst_vertices_to_restore.append(v_to_be_deleted)
-            set_faces_to_restore = set_faces_to_restore.union(old_faces)
-        else:
+        if new_faces_local != []:
             patch_id = len(lst_patches) + 1
             patch = Patch(patch_id, old_faces, new_faces_local, v_to_be_deleted)
 
             lst_patches.append(patch)
+        else:
+            nb_v_restored += 1
 
 
-    return lst_patches, lst_vertices_to_restore, set_faces_to_restore
+    return lst_patches, nb_v_restored
 
 
 def create_z_simple(liste_vertices: List[Vertex], id_f_start: int):

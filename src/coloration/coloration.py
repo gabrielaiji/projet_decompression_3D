@@ -15,21 +15,23 @@ def color_with_dsatur(l_patch: List[Patch], nb_color):
     adjacency_mat = create_mat_adj(l_patch)
     pacthes_colors = dsatur_modif(adjacency_mat, nb_color)
 
-    lst_v_restore = []
+    set_v_restore = set()
     set_f_restore = set()
 
     
     for patch in copy(l_patch):
         color = pacthes_colors[patch.id()-1]
         if color is None:
-            lst_v_restore.append(patch.getDeletedVertex())
+            set_v_restore.add(patch.getDeletedVertex())
+
             set_add_f_restore = set(patch.getDeletedFaces())
             set_f_restore = set_f_restore.union(set_add_f_restore)
+            patch.delete()
             l_patch.remove(patch)
         else:
             patch.setColor(couleurs[color])
     
-    return lst_v_restore, set_f_restore
+    return set_v_restore, set_f_restore
 
 # Ajouter une valeur dans un dictionnaire
 # IN : 
