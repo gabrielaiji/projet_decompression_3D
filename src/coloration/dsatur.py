@@ -121,3 +121,42 @@ def dsatur_modif(adjacency: List[List[int]], k: int):
         available_colors = copy.deepcopy(available_colors_copy)
 
     return colors
+
+import numpy as np
+
+def dsatur_modif2(adjacency: np.ndarray, k: int) -> np.ndarray:
+    """
+    Optimized DSATUR algorithm using NumPy for vertex coloring.
+
+    :param adjacency: Adjacency matrix as a NumPy array.
+    :param k: Maximum number of colors.
+    :return: Array of colors assigned to each vertex.
+    """
+    nb_vertices = len(adjacency)
+    degrees = np.sum(adjacency, axis=1)
+
+    # Sorting vertices by degree in descending order
+    sorted_vertices = np.argsort(degrees)[::-1]
+
+    # Initializing color assignments and available color tracking
+    colors = np.full(nb_vertices, -1, dtype=int)
+    available_colors = np.ones((nb_vertices, k), dtype=bool)
+
+    for vertex in sorted_vertices:
+        # Identifying available colors for this vertex
+        neighbors = adjacency[vertex] > 0
+        unavailable_colors = np.any(available_colors[neighbors], axis=0)
+        available_color_indices = np.where(unavailable_colors)[0]
+
+        if available_color_indices.size > 0:
+            # Assigning the first available color
+            selected_color = available_color_indices[0]
+            colors[vertex] = selected_color
+            # Updating available colors for neighbors
+            available_colors[neighbors, selected_color] = False
+        else:
+            # No available color found, marking as uncolored
+            colors[vertex] = -1
+
+    return colors
+

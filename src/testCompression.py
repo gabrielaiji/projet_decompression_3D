@@ -4,8 +4,8 @@ from io_obj.write_obj import write_mesh
 from delete.todeletemaillage import getVerticesToDelete
 from patch.create import patch_mesh
 
-nb_iterations = 3
-model = obja.parse_file('../example/suzanne.obj')
+nb_iterations = 15
+model = obja.parse_file('../example/bunny.obj')
 mesh = read_Mesh(model)
 
 for i in range(nb_iterations):
@@ -15,7 +15,9 @@ for i in range(nb_iterations):
     print("flag 1 iteration")
     patch_mesh(mesh, vertices_to_delete)
     print("flag 2 iteration")
-
-output_file = "../example/suzanne_compressee.obj"
+    output_file = "../example/bunny_comp.obj"
+    write_mesh(mesh, output_file)
+    
+output_file = "../example/bunny_comp.obj"
 write_mesh(mesh, output_file)
 

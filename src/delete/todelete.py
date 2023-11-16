@@ -108,52 +108,56 @@ def vertices_to_delete(faces,vertices):
     """
     forbidden_vertices = set()
 
-    triangles_per_vertex = [[] for i in range(len(vertices))]
+    triangles_per_vertex = {}
     
     for face in faces:
-        
+        #print("la face est : ", face)
         for vertex in face:
+            triangles_per_vertex.setdefault(vertex, []).append(face)
             #print("C'est l'indice du vertex : ", str(vertex)+ " or la liste est de taille(nombre de vertex) : ", str(len(triangles_per_vertex)))
             
-            triangles_per_vertex[vertex].append(face)
-    vertices_to_delete = []
-    for vertex,trianglelist in enumerate(triangles_per_vertex):
-        edges = [get_edges(triangle) for triangle in trianglelist]
-        flat_edges = [edge for triangle_edges in edges for edge in triangle_edges]
-        edge_lengths = [np.linalg.norm(np.array(edge[1]) - np.array(edge[0])) for edge in flat_edges]
-        mean_edge_length = np.mean(edge_lengths)
-        #print("mean_edge_length : ", mean_edge_length)
-        #print("Trianglelist est : ", trianglelist)
-        #print("Vertex est : ", vertex)
-        if len(trianglelist) == 0:
-            toDelete = True
-        elif is_cycle(trianglelist):
-            #print("cycle")
-            #simple
-            toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.001,edgelmoy=mean_edge_length)
-        else:
-            #boundary or complexe
-            #print("pas de cycle")
-            type,boundaryedge = classify_vertex(vertex, trianglelist)
-            if type == "boundary":
-                toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.01,edgelmoy=mean_edge_length)
-                
-            elif type == "complex" or "unclassified":
-                toDelete = False
-        """print("juste anvant le if, vertex est : ", vertex)
-        print("juste avant le if, toDelete est : ", toDelete)"""
-        if toDelete and not (vertex in forbidden_vertices):
-            vertices_to_delete.append(vertex)
-            forbidden_vertices.add(vertex)  # Add the current vertex to forbidden_vertices
-            # Add adjacent vertices of the deleted vertex to the forbidden set
-            #print("trianglelist : ", trianglelist)
-            #print("vertex : ", vertex)
-            for triangle in trianglelist:
-                for adj_vertex_index in triangle:
-                    """print("triangle : ", triangle)
-                    print('adj_vertex_index : ', adj_vertex_index)"""
-                    forbidden_vertices.add(adj_vertex_index)
 
+    vertices_to_delete = []
+    for vertex, trianglelist in triangles_per_vertex.items():
+        if vertices[vertex] != 0:
+            edges = [get_edges(triangle) for triangle in trianglelist]
+            flat_edges = [edge for triangle_edges in edges for edge in triangle_edges]
+            edge_lengths = [np.linalg.norm(np.array(edge[1]) - np.array(edge[0])) for edge in flat_edges]
+            mean_edge_length = np.mean(edge_lengths)
+            #print("mean_edge_length : ", mean_edge_length)
+            #print("Trianglelist est : ", trianglelist)
+            #print("Vertex est : ", vertex)
+            if len(trianglelist) == 0:
+                toDelete = True
+            elif is_cycle(trianglelist):
+                #print("cycle")
+                #simple
+                toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.001,edgelmoy=mean_edge_length)
+            else:
+                #boundary or complexe
+                #print("pas de cycle")
+                type,boundaryedge = classify_vertex(vertex, trianglelist)
+                if type == "boundary":
+                    toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.01,edgelmoy=mean_edge_length)
+                    
+                elif type == "complex" or "unclassified":
+                    toDelete = False
+            """print("juste anvant le if, vertex est : ", vertex)
+            print("juste avant le if, toDelete est : ", toDelete)"""
+            if toDelete and not (vertex in forbidden_vertices):
+                vertices_to_delete.append(vertex)
+                forbidden_vertices.add(vertex)  # Add the current vertex to forbidden_vertices
+                # Add adjacent vertices of the deleted vertex to the forbidden set
+                #print("trianglelist : ", trianglelist)
+                #print("vertex : ", vertex)
+                for triangle in trianglelist:
+                    for adj_vertex_index in triangle:
+                        """print("triangle : ", triangle)
+                        print('adj_vertex_index : ', adj_vertex_index)"""
+                        forbidden_vertices.add(adj_vertex_index)
+        else:
+            print("Vertex indice : ", vertex, " est déjà supprimé")
+            print("Cela concerne les faces : ", trianglelist)
     
     return vertices_to_delete
 
@@ -181,8 +185,8 @@ def distance_to_plane(vertex,triangles,vertices,deldist=0.2,edgelmoy=1):
     print("Vertex: ", vertices[vertex])
     print("Dot product: ", dot_product)
     print("norm: ", norm)
-    print("Distance to plane: ", distance)
-    """
+    print("Distance to plane: ", distance)"""
+    
     return (distance/edgelmoy < deldist) #conditionner la distance par la moyenne des longueurs des edge du vertex, ça marchera mieux (pas besoin de changer de thershold pour chaque mesh)
 
 def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1,edgelmoy=1):
@@ -203,6 +207,9 @@ def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1,edgelmoy=1):
         AP = np.array(vertices[vertex]) - A
         AB = B - A
         magnitude_AB = np.linalg.norm(AB)
+        if magnitude_AB == 0:
+            print("Magnitude AB = 0, problème ?")
+            return False
         #print("Magnitude AB : ", magnitude_AB)
         #print("Magnitude AP : ", np.linalg.norm(AP))
         projection = np.dot(AP, AB) / magnitude_AB
@@ -265,13 +272,15 @@ def vertices_to_delete3(maillage):
 
     
     faceslist = [face.getVertexIds() for face in maillage.getFaces()]
-    range = max([max(face) for face in faceslist])
-    verticeslist = [0]*(range+1)
+    rangel = max([max(face) for face in faceslist])
+    verticeslist = [0]*(rangel+1)
     for vertex in sorted(maillage.getVertices(), key=lambda vertex: vertex.id()):
         #print("Sachant que range est : ", range)
         #print("on est dans vertices_to_delete3 et on a vertex.id() et vertex.getCoords() : ", vertex.id(), vertex.getCoords())
-        if vertex.id() <= range:
+        if vertex.id() <= rangel:
             verticeslist[vertex.id()] = vertex.getCoords()
+        else:
+            print("vertices_to_delete3, vertex.id() est : ", vertex.id())
 
     vertices_to_del = vertices_to_delete(faceslist, verticeslist)
 

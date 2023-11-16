@@ -46,6 +46,9 @@ def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
                             list(map(lambda patch: patch.getDeletedFaces(), lst_patches))\
                             for face in sublist]
 
+    print("Avant delete, on a ", str(len(mesh.getFaces())), " faces")
+    print("Avant delete, on a ", str(len(mesh.getVertices())), " vertices")
+
     print("\tflag 3 patch")
     print("\tDeleted Vertices nb : ", str(len(list_vertices_to_delete) - len(set_v_restore)))
     print("\tDeleted faces nb : ", str(len(lst_deleted_faces)))
@@ -54,7 +57,12 @@ def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
     mesh.removeFaces(lst_deleted_faces)
     mesh.addFaces(lst_new_faces)
     mesh.removeVertices(list_vertices_to_delete)
+    mesh.addVertices(list(set_v_restore))
     mesh.addPatchIteration(lst_patches)
+
+    print("Après delete, on a ", str(len(mesh.getFaces())), " faces")
+    print("Après delete, on a ", str(len(mesh.getVertices())), " vertices")
+
 
     
 
