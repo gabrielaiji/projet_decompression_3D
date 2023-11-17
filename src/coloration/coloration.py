@@ -26,7 +26,7 @@ def color_with_dsatur(l_patch: List[Patch], nb_color):
 
             set_add_f_restore = set(patch.getDeletedFaces())
             set_f_restore = set_f_restore.union(set_add_f_restore)
-            patch.delete()
+            #patch.delete()
             l_patch.remove(patch)
         else:
             patch.setColor(couleurs[color])

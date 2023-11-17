@@ -8,7 +8,7 @@ from typing import List, Tuple
 def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
     id_f_start = mesh.getFaceNextId()
 
-    print("\tflag 0 patch")
+    print("\t\tflag 0 patch")
 
     lst_patches, nb_v_restored = create_all_patches(list_vertices_to_delete, id_f_start)
 
@@ -17,12 +17,12 @@ def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
     for patch in lst_patches:
         nb_deleted_faces_in_patches += len(patch.getDeletedFaces())
         nb_added_faces_by_patches += len(patch.getPatchFaces())
-    print("\tNb patches: ", str(len(lst_patches)))
-    print("\tNb to be deleted faces : ", str(nb_deleted_faces_in_patches))
-    print("\tNb to be added faces : ", str(nb_added_faces_by_patches))
-    print("\tNb Vertices restore due to vertex degree : ", str(nb_v_restored))
+    print("\t\tNb patches: ", str(len(lst_patches)))
+    print("\t\tNb to be deleted faces : ", str(nb_deleted_faces_in_patches))
+    print("\t\tNb to be added faces : ", str(nb_added_faces_by_patches))
+    print("\t\tNb Vertices restore due to vertex degree : ", str(nb_v_restored))
 
-    print("\n\tflag 1 patch")
+    print("\n\t\tflag 1 patch")
     set_v_restore, set_f_restore = color_with_dsatur(lst_patches, 3)
 
     nb_deleted_faces_in_patches = 0
@@ -30,13 +30,13 @@ def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
     for patch in lst_patches:
         nb_deleted_faces_in_patches += len(patch.getDeletedFaces())
         nb_added_faces_by_patches += len(patch.getPatchFaces())
-    print("\tNb patches: ", str(len(lst_patches)))
-    print("\tNb to be deleted faces : ", str(nb_deleted_faces_in_patches))
-    print("\tNb to be added faces : ", str(nb_added_faces_by_patches))
-    print("\tNb Vertices restore due to coloration : ", str(len(set_v_restore)))
-    print("\tNb Faces restore due to coloration : ", str(len(set_f_restore)))
+    print("\t\tNb patches: ", str(len(lst_patches)))
+    print("\t\tNb to be deleted faces : ", str(nb_deleted_faces_in_patches))
+    print("\t\tNb to be added faces : ", str(nb_added_faces_by_patches))
+    print("\t\tNb Vertices restore due to coloration : ", str(len(set_v_restore)))
+    print("\t\tNb Faces restore due to coloration : ", str(len(set_f_restore)))
 
-    print("\n\tflag 2 patch")
+    print("\n\t\tflag 2 patch")
 
     lst_new_faces = [face for sublist in\
                      list(map(lambda patch: patch.getPatchFaces(), lst_patches))\
@@ -45,23 +45,26 @@ def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
     lst_deleted_faces = [face for sublist in\
                             list(map(lambda patch: patch.getDeletedFaces(), lst_patches))\
                             for face in sublist]
+    
+    list_vertices_to_delete = list(map(lambda patch: patch.getDeletedVertex(), lst_patches))
 
-    print("Avant delete, on a ", str(len(mesh.getFaces())), " faces")
-    print("Avant delete, on a ", str(len(mesh.getVertices())), " vertices")
+    print("\t\t\tAvant delete, on a ", str(len(mesh.getFaces())), " faces")
+    print("\t\t\tAvant delete, on a ", str(len(mesh.getVertices())), " vertices")
 
-    print("\tflag 3 patch")
-    print("\tDeleted Vertices nb : ", str(len(list_vertices_to_delete) - len(set_v_restore)))
-    print("\tDeleted faces nb : ", str(len(lst_deleted_faces)))
-    print("\tNew faces nb : ", str(len(lst_new_faces)))
+    print("\t\tflag 3 patch")
+    print("\t\tDeleted Vertices nb : ", str(len(list_vertices_to_delete)))
+    print("\t\tDeleted faces nb : ", str(len(lst_deleted_faces)))
+    print("\t\tNew faces nb : ", str(len(lst_new_faces)))
 
-    mesh.removeFaces(lst_deleted_faces)
-    mesh.addFaces(lst_new_faces)
-    mesh.removeVertices(list_vertices_to_delete)
-    mesh.addVertices(list(set_v_restore))
-    mesh.addPatchIteration(lst_patches)
+    # mesh.removeVertices(list_vertices_to_delete)
+    #mesh.addVertices(list(set_v_restore))
+    # mesh.removeFaces(lst_deleted_faces)
+    # mesh.addFaces(lst_new_faces)
+    # mesh.addPatchIteration(lst_patches)
+    mesh.applyCompression(lst_patches)
 
-    print("Après delete, on a ", str(len(mesh.getFaces())), " faces")
-    print("Après delete, on a ", str(len(mesh.getVertices())), " vertices")
+    print("\t\t\tAprès delete, on a ", str(len(mesh.getFaces())), " faces")
+    print("\t\t\tAprès delete, on a ", str(len(mesh.getVertices())), " vertices")
 
 
     

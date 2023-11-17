@@ -1,7 +1,7 @@
 from __future__ import annotations
 from copy import deepcopy, copy
 
-from typing import List
+from typing import List, Set
 
 class Vertex:
 
@@ -10,7 +10,7 @@ class Vertex:
 		self._x = x
 		self._y = y
 		self._z = z
-		self.faces = set()
+		self.faces : Set[Face] = set()
 
 	def setId(self, id: int):
 		self._id = id
@@ -32,6 +32,10 @@ class Vertex:
 	
 	def printToObja(self):
 		return "v {} {} {}".format(self._x, self._y, self._z)
+	
+	def printToFacesId(self):
+		facesids = list(map(lambda face: face.id()+1, self.getFaces()))
+		return "Vertex {} : F : {}".format(self.id()+1, facesids)
 
 	def id(self) -> int:
 		return self._id
@@ -52,6 +56,12 @@ class Vertex:
 		if face in self.faces:
 			self.faces.remove(face)
 	
+	def removeFaces(self, faces: Set[Face]):
+		self.faces = self.faces.difference(faces)
+	
+	def addFaces(self, faces: Set[Face]):
+		self.faces = self.faces.union(faces)
+	
 	def getFaces(self) -> set[Face]:
 		return self.faces
 
@@ -62,7 +72,11 @@ class Face:
 		self._vertices = vertices
 		self._color = None
 
-		for vertex in vertices:
+		#for vertex in vertices:
+		#	vertex.addFace(self)
+	
+	def addRefToVertices(self):
+		for vertex in self._vertices:
 			vertex.addFace(self)
 
 	def setId(self, id: int):
@@ -98,9 +112,14 @@ class Face:
 		id3 = self._vertices[2].id()
 		return "f {} {} {}".format(id1, id2, id3)
 	
-	def deleteVertexReferences(self):
+	def printToVerticesId(self):
+		verticesids = list(map(lambda v: v.id()+1, self.getVertices()))
+		return "Face {} : V : {}".format(self.id()+1, verticesids)
+	
+	def deleteVertexReferences(self, deletedVertex: Vertex):
 		for vertex in self._vertices:
-			vertex.removeFace(self)
+			if vertex != deletedVertex:
+				vertex.removeFace(self)
 
 class Patch:
 
@@ -164,7 +183,16 @@ class Patch:
 	
 	def delete(self):
 		for face in self.getPatchFaces():
-			face.deleteVertexReferences()
+			face.deleteVertexReferences(self.getDeletedVertex())
+	
+	def updateFacesVerticesReferences(self):
+		for face in self.getDeletedFaces():
+			for vertex in face.getVertices():
+				if vertex != self.getDeletedVertex():
+					vertex.removeFace(face)
+		
+		for face in self.getPatchFaces():
+			face.addRefToVertices()
 
 	
 class Mesh:
@@ -225,5 +253,30 @@ class Mesh:
 		copy = deepcopy(self._patches)
 		copy.reverse()
 		return copy
+	
+	def applyCompression(self, patches: List[Patch]):
+		for patch in patches:
+			patch.updateFacesVerticesReferences()
+			self._vertices.remove(patch.getDeletedVertex())
 
+			print("\t\t\t\tPatch of Vertex {}".format(patch.getDeletedVertex().id()+1))
+
+			#self.removeFaces(patch.getDeletedFaces())
+			for face in patch.getDeletedFaces():
+				self._faces.remove(face)
+
+
+			faces_ids = list(map(lambda f:f.id()+1, self._faces))
+			print("\t\t\t\tFaces after deletion: {}".format(faces_ids))
+			
+			self.addFaces(patch.getPatchFaces())
+
+			faces_ids = list(map(lambda f:f.id()+1, self._faces))
+			print("\t\t\t\tFaces after patching: {}".format(faces_ids))
+
+			deleted_v_id = patch.getDeletedVertex().id()+1
+			deleted_faces_id = list(map(lambda f:f.id()+1, patch.getDeletedFaces()))
+			print("\t\t\t\t\tSuppression of Vertex {} -> suppression of Faces : {}".format(deleted_v_id, deleted_faces_id))
+
+		self.addPatchIteration(patches)
 	
