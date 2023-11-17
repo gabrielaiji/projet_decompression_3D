@@ -122,7 +122,7 @@ def dsatur_modif(adjacency: List[List[int]], k: int):
 
     return colors
 
-import numpy as np
+
 
 def dsatur_modif2(adjacency: np.ndarray, k: int) -> np.ndarray:
     """
@@ -145,8 +145,8 @@ def dsatur_modif2(adjacency: np.ndarray, k: int) -> np.ndarray:
     for vertex in sorted_vertices:
         # Identifying available colors for this vertex
         neighbors = adjacency[vertex] > 0
-        unavailable_colors = np.any(available_colors[neighbors], axis=0)
-        available_color_indices = np.where(unavailable_colors)[0]
+        #unavailable_colors = np.any(available_colors[neighbors], axis=0)
+        available_color_indices = np.where(available_colors[vertex])[0]
 
         if available_color_indices.size > 0:
             # Assigning the first available color
