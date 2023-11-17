@@ -266,17 +266,17 @@ class Mesh:
 				self._faces.remove(face)
 
 
-			faces_ids = list(map(lambda f:f.id()+1, self._faces))
+			faces_ids = list(map(lambda f:f.id()+1, self.getFaces()))
 			print("\t\t\t\tFaces after deletion: {}".format(faces_ids))
 			
 			self.addFaces(patch.getPatchFaces())
 
-			faces_ids = list(map(lambda f:f.id()+1, self._faces))
+			faces_ids = list(map(lambda f:f.id()+1,  self.getFaces()))
 			print("\t\t\t\tFaces after patching: {}".format(faces_ids))
 
 			deleted_v_id = patch.getDeletedVertex().id()+1
 			deleted_faces_id = list(map(lambda f:f.id()+1, patch.getDeletedFaces()))
 			print("\t\t\t\t\tSuppression of Vertex {} -> suppression of Faces : {}".format(deleted_v_id, deleted_faces_id))
-
+			
 		self.addPatchIteration(patches)
 	

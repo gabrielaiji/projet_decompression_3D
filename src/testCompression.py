@@ -18,10 +18,10 @@ for i in range(nb_iterations):
 
 
     print("\tflag 1 iteration")
-    patch_mesh(mesh, vertices_to_delete)
+    mesh = patch_mesh(mesh, vertices_to_delete)
     print("\tflag 2 iteration")
-    output_file = "../example/bunny_comp.obj"
-    write_mesh(mesh, output_file)
+    #output_file = "../example/bunny_comp.obj"
+    #write_mesh(mesh, output_file)
 
 for vertex in mesh.getVertices():
     print(vertex.printToFacesId())

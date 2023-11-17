@@ -48,8 +48,8 @@ def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
     
     list_vertices_to_delete = list(map(lambda patch: patch.getDeletedVertex(), lst_patches))
 
-    print("\t\t\tAvant delete, on a ", str(len(mesh.getFaces())), " faces")
-    print("\t\t\tAvant delete, on a ", str(len(mesh.getVertices())), " vertices")
+    #print("\t\t\tAvant delete, on a ", str(len(mesh.getFaces())), " faces")
+    #print("\t\t\tAvant delete, on a ", str(len(mesh.getVertices())), " vertices")
 
     print("\t\tflag 3 patch")
     print("\t\tDeleted Vertices nb : ", str(len(list_vertices_to_delete)))
@@ -62,9 +62,12 @@ def patch_mesh(mesh: Mesh, list_vertices_to_delete: List[Vertex]):
     # mesh.addFaces(lst_new_faces)
     # mesh.addPatchIteration(lst_patches)
     mesh.applyCompression(lst_patches)
+    faces_ids = list(map(lambda f:f.id()+1,  mesh.getFaces()))
+    print("final faces: {}".format(faces_ids))
 
-    print("\t\t\tAprès delete, on a ", str(len(mesh.getFaces())), " faces")
-    print("\t\t\tAprès delete, on a ", str(len(mesh.getVertices())), " vertices")
+    #print("\t\t\tAprès delete, on a ", str(len(mesh.getFaces())), " faces")
+    #print("\t\t\tAprès delete, on a ", str(len(mesh.getVertices())), " vertices")
+    return mesh
 
 
     
