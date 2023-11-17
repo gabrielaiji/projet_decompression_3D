@@ -145,5 +145,4 @@ def create_z_simple(liste_vertices: List[Vertex], id_f_start: int):
         compteur += 1
         i += 1
         j -= 1
-
     return result, id_f_start

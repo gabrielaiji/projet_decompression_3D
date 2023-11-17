@@ -1,10 +1,10 @@
 import obja
 from io_obj.read_obj import read_Mesh
-from io_obj.write_obj import write_mesh
+from io_obj.write_obj import write_mesh, write_obj_decompression
 from delete.todeletemaillage import getVerticesToDelete
 from patch.create import patch_mesh
 
-nb_iterations = 5
+nb_iterations = 2
 model = obja.parse_file('../example/bunny_bis_bis.obj')
 mesh = read_Mesh(model)
 
@@ -23,12 +23,9 @@ for i in range(nb_iterations):
     #output_file = "../example/bunny_comp.obj"
     #write_mesh(mesh, output_file)
 
-for vertex in mesh.getVertices():
-    print(vertex.printToFacesId())
+#output_file = "../example/bunny_compressee.obj"
+#write_mesh(mesh, output_file)
 
-for face in mesh.getFaces():
-    print(face.printToVerticesId())
-    
-output_file = "../example/bunny_bis_compressee.obj"
-write_mesh(mesh, output_file)
+output_file = "../example/bunny_decompressee.obja"
+write_obj_decompression(mesh, output_file)
 
