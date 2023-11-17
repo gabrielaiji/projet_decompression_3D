@@ -1,7 +1,7 @@
 import obja
 from objects import Face, Patch, Mesh
 from io_obj.read_obj import read_Mesh
-from io_obj.write_obj import write_obj_decompression
+from io_obj.write_obj import write_obj_decompression, write_mesh
 
 
 nb_iterations = 1
@@ -52,6 +52,9 @@ mesh.removeVertices(verticesToRemove)
 facesToRemove = mesh.getFacesFromId([1, 2, 3, 9, 5, 4, 10, 6])
 mesh.removeFaces(facesToRemove)
 
+
+output_file = "../example/cube_compressee_main.obj"
+write_mesh(mesh, output_file)
 
 
 output_file = "../example/cube_decompressee_main.obj"
