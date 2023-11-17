@@ -35,7 +35,7 @@ def write_obj_decompression(mesh: Mesh, output_file: str):
 
     for (vertex_index, _) in enumerate(vertices):
         vertices[vertex_index].setId(vertex_index+1)
-        last_vertex_index = vertex_index
+        last_vertex_index = vertex_index + 1
 
     for (face_index, _) in enumerate(faces):
         faces[face_index].setId(face_index+1)
@@ -59,7 +59,6 @@ def write_obj_decompression(mesh: Mesh, output_file: str):
                     id = face_a_supprimer.id()
                     f.write(f"df {id}\n")
                     
-                    #faces.remove(face)
                     for face in faces:
                         if face_a_supprimer.getVertexIds() == face.getVertexIds():
                             faces.remove(face)
@@ -75,13 +74,13 @@ def write_obj_decompression(mesh: Mesh, output_file: str):
 
                 deleted_faces = patch.getDeletedFaces()
 
-                for face in deleted_faces:
-                    vertex_ids = face.getVertexIds()
+                for face_a_ajouter in deleted_faces:
+                    vertex_ids = face_a_ajouter.getVertexIds()
                     f.write(f"f {vertex_ids[0]} {vertex_ids[1]} {vertex_ids[2]}\n")
-                    faces.append(face)
-                    if face.getColor() != None:
-                        color = face.getColor()
-                        f.write(f"fc {face.id()} {color[0]} {color[1]} {color[2]}\n")
+                    faces.append(face_a_ajouter)
+                    if face_a_ajouter.getColor() != None:
+                        color = face_a_ajouter.getColor()
+                        f.write(f"fc {face_a_ajouter.id()} {color[0]} {color[1]} {color[2]}\n")
 
                 for (face_index, _) in enumerate(faces):
                     faces[face_index].setId(face_index+1)
