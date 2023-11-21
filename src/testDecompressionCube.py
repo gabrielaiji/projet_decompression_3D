@@ -5,7 +5,7 @@ from delete.todeletemaillage import getVerticesToDelete
 from patch.create import patch_mesh
 
 nb_iterations = 10
-model = obja.parse_file('../example/Poule.obj')
+model = obja.parse_file('../example/Dauphin.obj')
 mesh = read_Mesh(model)
 
 for i in range(nb_iterations):
@@ -26,6 +26,6 @@ for i in range(nb_iterations):
 #output_file = "../example/bunny_compressee.obj"
 #write_mesh(mesh, output_file)
 
-output_file = "../example/Poule_decompressee.obja"
+output_file = "../example/Dauphin_decompressee.obja"
 write_obj_decompression(mesh, output_file)
 

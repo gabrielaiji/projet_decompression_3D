@@ -1,5 +1,7 @@
 from __future__ import annotations
+import numpy as np
 from copy import copy
+from prediction.predictor import predict
 
 from typing import List, Set
 
@@ -23,6 +25,11 @@ class Vertex:
 
 	def setZ(self, z: float):
 		self._z = z
+
+	def setCoords(self, xyz : List[float]):
+		self.setX(xyz[0])
+		self.setY(xyz[1])
+		self.setZ(xyz[2])
 
 	def getCoords(self) -> List[float]:
 		return [self._x, self._y, self._z]
@@ -63,6 +70,12 @@ class Vertex:
 	
 	def getFaces(self) -> set[Face]:
 		return self.faces
+	
+	def getDiff(self, second_v: Vertex) -> List[float]:
+		coords_1 = np.array(self.getCoords())
+		coords_2 = np.array(second_v.getCoords())
+
+		return coords_1 - coords_2
 
 class Face:
 
@@ -131,6 +144,12 @@ class Patch:
 		self._color = None
 		self._deleted_vertex = deleted_Vertex
 
+		predicted_coords = predict(deleted_faces, deleted_Vertex)
+		deleted_coords = np.array(deleted_Vertex.getCoords())
+
+		self.setDisplacementCoords(deleted_coords - predicted_coords)
+		deleted_Vertex.setCoords(predicted_coords)
+
 	def setColor(self, color: List[float]):
 		for face in self._patch_faces:
 			face.setColor(color)
@@ -169,11 +188,11 @@ class Patch:
 	def getVertexIds(self) -> List[List[int]]:
 		return list(map(lambda vertex : vertex.id(), self.getVertices()))
 	
-	def setDisplacementVector(self, vector: List[float]):
-		self._displacement_vector = vector
+	def setDisplacementCoords(self, coords: List[float]):
+		self._displacement_coords = coords
 	
-	def getDisplacementVector(self) -> List[float]:
-		return copy(self._displacement_vector)
+	def getDisplacementCoords(self) -> List[float]:
+		return copy(self._displacement_coords)
 
 	def id(self) -> int:
 		return self._id

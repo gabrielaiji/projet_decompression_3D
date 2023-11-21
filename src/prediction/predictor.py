@@ -1,7 +1,10 @@
-from objects import Patch, Face, Vertex
 import numpy as np
 
-from typing import List
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+	from objects import Patch, Face, Vertex
+
 
 """def predict(lst_patches: List[Patch]):
     
@@ -12,7 +15,7 @@ from typing import List
 		patch.setDisplacementVector(list(deleted_vertex_coord - coord_mean))"""
 
 
-def predict(deleted_faces: List[Face], deleted_Vertex: Vertex):
+def predict(deleted_faces, deleted_Vertex):
 
 	vertices = set()
 

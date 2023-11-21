@@ -73,6 +73,9 @@ def write_obj_decompression(mesh: Mesh, output_file: str):
                 last_vertex_index += 1
                 f.write(f"v {deleted_vertex.x()} {deleted_vertex.y()} {deleted_vertex.z()}\n")
 
+                displacement_coords = patch.getDisplacementCoords()
+                f.write(f"tv {deleted_vertex.id()} {displacement_coords[0]} {displacement_coords[1]} {displacement_coords[2]}\n")
+
                 deleted_faces = patch.getDeletedFaces()
 
                 for face_a_ajouter in deleted_faces:
