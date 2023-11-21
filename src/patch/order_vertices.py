@@ -54,7 +54,7 @@ def orderVertices(faces: List[Face], v_delete: Vertex) -> List[Vertex]:
     ordered_ids = list(map(lambda v:v.id(), ordered_v))
     ordered_set = set(ordered_ids)
 
-    if len(ordered_ids) != len(ordered_set):
+    if len(ordered_v) != len(related_v.keys()):
         return []
         """
         print("PROBLEME : {}".format(ordered_ids))

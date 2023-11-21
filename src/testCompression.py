@@ -5,7 +5,7 @@ from delete.todeletemaillage import getVerticesToDelete
 from patch.create import patch_mesh
 
 nb_iterations = 10
-model = obja.parse_file('../example/bunny_bis_bis.obj')
+model = obja.parse_file('../example/Poule.obj')
 mesh = read_Mesh(model)
 
 nb_faces_original = len(mesh.getFaces())
@@ -34,6 +34,6 @@ print("Nb Vertices debut : {}".format(nb_v_original))
 print("\nNb Faces final : {}".format(len(mesh.getFaces())))
 print("Nb Vertices final : {}".format(len(mesh.getVertices())))
 
-output_file = "../example/bunny_bis_compressee.obj"
+output_file = "../example/Poule_compressee.obj"
 write_mesh(mesh, output_file)
 
