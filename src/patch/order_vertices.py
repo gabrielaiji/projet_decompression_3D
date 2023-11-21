@@ -1,5 +1,6 @@
 from objects import Vertex, Face
 from coloration.dsatur import add_values_in_dict
+from copy import copy
 
 from typing import List
 
@@ -21,7 +22,7 @@ def orderVertices(faces: List[Face], v_delete: Vertex) -> List[Vertex]:
     if len(faces) == 0:
         return [v_delete]
     for i, face in enumerate(faces):
-        vertices = face.getVertices()
+        vertices = copy(face.getVertices())
         vertices.remove(v_delete)
         
         v0 = vertices[0]
@@ -49,6 +50,22 @@ def orderVertices(faces: List[Face], v_delete: Vertex) -> List[Vertex]:
                 
         
         ordered_v.append(potential_next_v[potential_indice])
+
+    ordered_ids = list(map(lambda v:v.id(), ordered_v))
+    ordered_set = set(ordered_ids)
+
+    if len(ordered_ids) != len(ordered_set):
+        return []
+        """
+        print("PROBLEME : {}".format(ordered_ids))
+        print("NB faces = {}".format(len(faces)))
+        f_ids = list(map(lambda f:f.id(), faces))
+        print("faces_ids : {}".format(f_ids))
+        print("Deleted Vertex : {}\n".format(v_delete.id()))
+
+        for face in faces:
+            print("Face {} : vertices {}".format(face.id(), face.getVertexIds()))
+        a = input()"""
     
     return ordered_v
 

@@ -31,7 +31,7 @@ def color_with_dsatur(l_patch: List[Patch], nb_color):
         else:
             patch.setColor(couleurs[color])
     
-    return set_v_restore, set_f_restore
+    return l_patch
 
 # Ajouter une valeur dans un dictionnaire
 # IN : 
