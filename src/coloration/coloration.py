@@ -21,7 +21,7 @@ def color_with_dsatur(l_patch: List[Patch], nb_color):
     
     for patch in copy(l_patch):
         color = pacthes_colors[patch.id()-1]
-        if color is None:
+        if color == -1:
             set_v_restore.add(patch.getDeletedVertex())
 
             set_add_f_restore = set(patch.getDeletedFaces())
