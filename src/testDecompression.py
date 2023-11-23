@@ -1,17 +1,20 @@
 import obja
 from io_obj.read_obj import read_Mesh
 from io_obj.write_obj import write_mesh
-from delete.todeletemaillage import getVerticesToDelete
+from delete.todeletemaillage import getVerticesToDelete, getDelete_distance
 from patch.create import patch_mesh
 
 nb_iterations = 1
 model = obja.parse_file('../example/cube.obj')
 mesh = read_Mesh(model)
 
+del_dist = getDelete_distance(mesh)
+
+print("Delete Distance calculated : {}".format(del_dist))
 for i in range(nb_iterations):
     print("Iteration : " + str(i))
     print("flag 0 iteration")
-    vertices_to_delete = getVerticesToDelete(mesh)
+    vertices_to_delete = getVerticesToDelete(mesh, del_dist)
     print("flag 1 iteration")
     patch_mesh(mesh, vertices_to_delete)
     print("flag 2 iteration")

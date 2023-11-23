@@ -97,7 +97,7 @@ def dumb_cycle(triangles,start_triangle=None):
     return len(visited_triangles) == len(triangles)
 
 
-def vertices_to_delete(faces,vertices):
+def vertices_to_delete(faces,vertices, delete_distance):
     """Return a list of vertices to delete from the model.
     
     Args:
@@ -115,7 +115,8 @@ def vertices_to_delete(faces,vertices):
         for vertex in face:
             triangles_per_vertex.setdefault(vertex, []).append(face)
             #print("C'est l'indice du vertex : ", str(vertex)+ " or la liste est de taille(nombre de vertex) : ", str(len(triangles_per_vertex)))
-            
+    
+    #delete_distance = 0.001
 
     vertices_to_delete = []
     for vertex, trianglelist in triangles_per_vertex.items():
@@ -132,13 +133,13 @@ def vertices_to_delete(faces,vertices):
             elif is_cycle(trianglelist):
                 #print("cycle")
                 #simple
-                toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=0.001,edgelmoy=mean_edge_length)
+                toDelete = distance_to_plane(vertex,trianglelist,vertices,deldist=delete_distance,edgelmoy=mean_edge_length)
             else:
                 #boundary or complexe
                 #print("pas de cycle")
                 type,boundaryedge = classify_vertex(vertex, trianglelist)
                 if type == "boundary":
-                    toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=0.01,edgelmoy=mean_edge_length)
+                    toDelete = distance_to_edge(vertices,vertex,boundaryedge,deldist=delete_distance,edgelmoy=mean_edge_length)
                     
                 elif type == "complex" or "unclassified":
                     toDelete = False
@@ -237,7 +238,7 @@ def add_1_to_list_id_vertices(id_vertices):
 
 
 
-def vertices_to_delete2(faces):
+def vertices_to_delete2(faces, delete_distance):
     """Return a list of vertices to delete from the model.
     
     Args:
@@ -255,13 +256,13 @@ def vertices_to_delete2(faces):
         verticeslist[id] = vertex
 
 
-    vertices_to_del = vertices_to_delete(faceslist, verticeslist)
+    vertices_to_del = vertices_to_delete(faceslist, verticeslist, delete_distance)
 
-    print("On a supprimé " + str(len(vertices_to_del)/len(np.asarray(verticeslist))*100) + "% des sommets du maillage")
+    print("On a choisi " + str(len(vertices_to_del)/len(np.asarray(verticeslist))*100) + "% des sommets du maillage")
 
     return vertices_to_del
 
-def vertices_to_delete3(maillage):
+def vertices_to_delete3(maillage, delete_distance):
     """Return a list of vertices to delete from the model.
     
     Args:
@@ -282,14 +283,14 @@ def vertices_to_delete3(maillage):
         else:
             print("vertices_to_delete3, vertex.id() est : ", vertex.id())
 
-    vertices_to_del = vertices_to_delete(faceslist, verticeslist)
+    vertices_to_del = vertices_to_delete(faceslist, verticeslist, delete_distance)
 
     
     try:
-        print("On a supprimé " + str(len(vertices_to_del)/len(np.asarray(verticeslist))*100) + "% des sommets du maillage")
+        print("On a choisi " + str(len(vertices_to_del)/len(np.asarray(verticeslist))*100) + "% des sommets du maillage")
     except:
         try:
-            print("On a supprimé " + str(len(vertices_to_del)/len((verticeslist))*100) + "% des sommets du maillage")
+            print("On a choisi " + str(len(vertices_to_del)/len((verticeslist))*100) + "% des sommets du maillage")
         except Exception as e:
             print("Problème de print du '%' suppr, exception : ", e)
 

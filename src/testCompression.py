@@ -1,22 +1,24 @@
 import obja
 from io_obj.read_obj import read_Mesh
 from io_obj.write_obj import write_mesh
-from delete.todeletemaillage import getVerticesToDelete
+from delete.todeletemaillage import getVerticesToDelete, getDelete_distance
 from patch.create import patch_mesh
 
-nb_iterations = 10
+nb_iterations = 1
 model = obja.parse_file('../example/Dauphin.obj')
 mesh = read_Mesh(model)
 
 nb_faces_original = len(mesh.getFaces())
 nb_v_original = len(mesh.getVertices())
 
+del_dist = getDelete_distance(mesh)
+print("Delete Distance calculated : {}".format(del_dist))
 for i in range(nb_iterations):
     for face in mesh.getFaces():
         face.setColor(None)
     print("Iteration : " + str(i))
     print("\tflag 0 iteration")
-    vertices_to_delete = getVerticesToDelete(mesh)
+    vertices_to_delete = getVerticesToDelete(mesh, del_dist)
     #vertices_to_delete = [mesh.getVertexFromId(0)]
     vertices_to_delete_ids = list(map(lambda v: v.id()+1, vertices_to_delete))
 
