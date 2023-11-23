@@ -27,7 +27,10 @@ def getDelete_distance(maillage: Mesh) ->float:
     taux_min = 0.2
 
     while taux_choisi < 0.2:
-        delete_distance *= (taux_min/taux_choisi)*1.5
+        if taux_choisi < 0.01:
+            delete_distance *= 10
+        else:
+            delete_distance *= (taux_min/taux_choisi)*1.5
         nb_v_choisi = len(getVerticesToDelete(maillage, delete_distance))
         taux_choisi = nb_v_choisi /  nb_original_v
 

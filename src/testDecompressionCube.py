@@ -4,8 +4,8 @@ from io_obj.write_obj import write_mesh, write_obj_decompression
 from delete.todeletemaillage import getDelete_distance, getVerticesToDelete
 from patch.create import patch_mesh
 
-nb_iterations = 10
-model = obja.parse_file('../example/suzanne_terce.obj')
+nb_iterations = 8
+model = obja.parse_file('../example/icosphere.obj')
 mesh = read_Mesh(model)
 
 nb_faces_original = len(mesh.getFaces())
@@ -38,6 +38,6 @@ print("Nb Vertices debut : {}".format(nb_v_original))
 print("\nNb Faces final : {}".format(len(mesh.getFaces())))
 print("Nb Vertices final : {}".format(len(mesh.getVertices())))
 
-output_file = "../example/suzanne_decompressee.obja"
+output_file = "../example/icosphere_decompressee.obja"
 write_obj_decompression(mesh, output_file)
 
