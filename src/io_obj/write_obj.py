@@ -1,6 +1,8 @@
 from objects import Vertex, Face, Mesh
+from coloration import couleurs
 
 from typing import List
+from . import getColorEntropy
 
 def write_mesh(mesh: Mesh, output_file: str):
     write_obj(mesh.getVertices(), mesh.getFaces(), output_file)
@@ -25,7 +27,7 @@ def write_obj(list_vertices: List[Vertex],
             vertex_ids = face.getVertexIds()
             f.write(f"f {vertex_ids[0]} {vertex_ids[1]} {vertex_ids[2]}\n")
             if face.getColor() != None:
-                color = face.getColor()
+                color = couleurs[face.getColor()]
                 f.write(f"fc {face.id()} {color[0]} {color[1]} {color[2]}\n")
 
 def write_obj_decompression(mesh: Mesh, output_file: str):
@@ -40,6 +42,9 @@ def write_obj_decompression(mesh: Mesh, output_file: str):
     for (face_index, _) in enumerate(faces):
         faces[face_index].setId(face_index+1)
         last_face_index = face_index + 1
+
+    #color_entropy_octet = getColorEntropy(mesh)/8
+    #nb_octet = 0
 
     with open(output_file, "w") as f:
         for vertex in vertices:
@@ -58,7 +63,7 @@ def write_obj_decompression(mesh: Mesh, output_file: str):
             for patch in list_patch:
                 for face in patch.getPatchFaces():
                     if face.getColor() != None:
-                        color = face.getColor()
+                        color = couleurs[face.getColor()]
                         f.write(f"fc {face.id()} {color[0]} {color[1]} {color[2]}\n")
 
             for patch in list_patch:

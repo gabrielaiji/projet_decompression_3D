@@ -94,10 +94,10 @@ class Face:
 	def getVertices(self) -> List[Vertex]:
 		return self._vertices
 
-	def setColor(self, color: List[float]):
+	def setColor(self, color: int):
 		self._color = color
 
-	def getColor(self) -> List[float]:
+	def getColor(self) -> int:
 		return self._color
 
 	def getVertexCoords(self) -> List[List[float]]:
@@ -150,12 +150,12 @@ class Patch:
 		self.setDisplacementCoords(deleted_coords - predicted_coords)
 		deleted_Vertex.setCoords(predicted_coords)
 
-	def setColor(self, color: List[float]):
+	def setColor(self, color: int):
 		for face in self._patch_faces:
 			face.setColor(color)
 		self._color = color
 
-	def getColor(self) -> List[float]:
+	def getColor(self) -> int:
 		return copy(self._color)
 	
 	def getDeletedVertex(self) -> Vertex:
