@@ -53,10 +53,7 @@ def write_obj_decompression(mesh: Mesh, output_file: str):
         for face in faces:
             vertex_ids = face.getVertexIds()
             f.write(f"f {vertex_ids[0]} {vertex_ids[1]} {vertex_ids[2]}\n")
-            """
-            if face.getColor() != None:
-                color = face.getColor()
-                f.write(f"fc {face.id()} {color[0]} {color[1]} {color[2]}\n")"""
+
 
         for list_patch in patches:
             
@@ -89,9 +86,6 @@ def write_obj_decompression(mesh: Mesh, output_file: str):
                     vertex_ids = face_a_ajouter.getVertexIds()
                     f.write(f"f {vertex_ids[0]} {vertex_ids[1]} {vertex_ids[2]}\n")
 
-                    """
-                    if face_a_ajouter.getColor() != None:
-                        color = face_a_ajouter.getColor()
-                        f.write(f"fc {face_a_ajouter.id()} {color[0]} {color[1]} {color[2]}\n")"""
+
 
                 
