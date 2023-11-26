@@ -209,7 +209,7 @@ def distance_to_edge(vertices,vertex,boundaryedge,deldist=0.1,edgelmoy=1):
         AB = B - A
         magnitude_AB = np.linalg.norm(AB)
         if magnitude_AB == 0:
-            print("Magnitude AB = 0, problème ?")
+            #print("Magnitude AB = 0")
             return False
         #print("Magnitude AB : ", magnitude_AB)
         #print("Magnitude AP : ", np.linalg.norm(AP))
